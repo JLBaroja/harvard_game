@@ -119,8 +119,8 @@ for(spp in 1:sims_per_parameter){
 
 add_tseries <- function(results_array,choices_array,alternative){
   for(i in 1:dim(results_array)[1]){
-    results <- wsls_results[i,]
-    choices <- wsls_choices[i,]
+    results <- results_array[i,]
+    choices <- choices_array[i,]
     
     points(which(choices==alternative),
            (cumsum(choices==alternative&results=='win')/cumsum(choices==alternative))[choices==alternative],
@@ -132,8 +132,8 @@ add_tseries <- function(results_array,choices_array,alternative){
 add_cumrec <- function(results_array,choices_array,alternative){
   
   for(i in 1:dim(results_array)[1]){
-    results <- wsls_results[i,]
-    choices <- wsls_choices[i,]
+    results <- results_array[i,]
+    choices <- choices_array[i,]
     lines(1:sum(choices==alternative),
           cumsum(results[which(choices==alternative)]=='win'))
     lines(c(sum(choices==alternative),n_trials),
@@ -145,8 +145,8 @@ add_cumrec <- function(results_array,choices_array,alternative){
 
 add_win_margin <- function(results_array,choices_array,alternative){
   for(i in 1:dim(results_array)[1]){
-    results <- wsls_results[i,]
-    choices <- wsls_choices[i,]
+    results <- results_array[i,]
+    choices <- choices_array[i,]
     lines(c(-0.5,0),
           rep(sum(results[which(choices==alternative)]=='win'),2),
           col='#cccccc')
