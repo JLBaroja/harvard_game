@@ -1,10 +1,11 @@
 
+
 prev_choices <- 0:10
 lt_parameters <- (2/3)*prev_choices/10
 st_parameters <- (1/3)+(2/3)*prev_choices/10
 
-plot(lt_parameters,ylim=c(0,1),pch=21,bg='black',type='o',cex=2)
-points(st_parameters,pch=21,bg='white',type='o',cex=2)
+# plot(lt_parameters,ylim=c(0,1),pch=21,bg='black',type='o',cex=2)
+# points(st_parameters,pch=21,bg='white',type='o',cex=2)
 
 
 
@@ -60,7 +61,7 @@ rndm <- function(theta){
 
 
 
-# previous_choice <- 'short_term'
+
 
 
 # Global Variables
@@ -93,3 +94,64 @@ for(spp in 1:sims_per_parameter){
 
 
 
+
+add_tseries <- function(results_array,choices_array,alternative){
+  for(i in 1:dim(results_array)[1]){
+    results <- wsls_results[i,]
+    choices <- wsls_choices[i,]
+    
+    points(which(choices==alternative),
+           cumsum(results=='win')[choices==alternative]/cumsum(choices==alternative)[choices==alternative],
+           type='l',lwd=2,col='#00000005')
+  }
+}
+
+add_cumrec <- function(results_array,choices_array,alternative){
+  
+  for(i in 1:dim(results_array)[1]){
+    results <- wsls_results[i,]
+    choices <- wsls_choices[i,]
+    lines(1:sum(choices==alternative),
+          cumsum(results[which(choices==alternative)]=='win'))
+    lines(c(sum(choices==alternative),n_trials),
+          rep(sum(results[which(choices==alternative)]=='win'),2),
+          col='#cccccc')
+    }
+  
+}
+
+add_winmargin <- function(results_array,choices_array,alternative){
+  for(i in 1:dim(results_array)[1]){
+    results <- wsls_results[i,]
+    choices <- wsls_choices[i,]
+    lines(c(-0.5,0),
+          rep(sum(results[which(choices==alternative)]=='win'),2),
+          col='#cccccc')
+    lines(c(0,1),
+          c(sum(choices==alternative&results=='win'),
+            sum(choices==alternative&results=='loss')))
+  }
+}
+
+display_alternative <- function(alternative) {
+  
+  par(mar=c(5,4,4,2))
+  plot(0,type='n',xlim=c(1,n_trials),ylim=c(-.25,1.25))
+  add_tseries(wsls_results,wsls_choices,alternative)
+  
+  par(mar=c(5,4,4,0))
+  plot(0,type='n',xlim=c(1,n_trials),ylim=c(1,n_trials))
+  add_cumrec(wsls_results,wsls_choices,alternative)
+  
+  par(mar=c(5,0,4,2))
+  plot(0,type='n',xlim=c(-.5,1.5),ylim=c(0,n_trials))
+  add_winmargin(wsls_results,wsls_choices,alternative)
+  
+}
+
+
+pdf(file='wsls_sim_Hgame.pdf',width=11,height=8)
+layout(matrix(1:6,ncol=3,byrow=T),widths=c(2,1,1))
+display_alternative('short_term')
+display_alternative('long_term')
+dev.off()
