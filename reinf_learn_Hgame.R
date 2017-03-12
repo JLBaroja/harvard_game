@@ -81,7 +81,7 @@ for(spp in 1:sims_per_parameter){
   for(trial in 1:n_trials){
     wsls_choices[spp,trial] <- wsls(previous_choice=previous_choice_wsls,
                                     previous_result=previous_result_wsls,
-                                    trial=trial,theta=.8)
+                                    trial=trial,theta=1)
     rndm_choices[spp,trial] <- rndm(theta=.8)
     wsls_results[spp,trial] <- harvard_game(wsls_choices[spp,trial])
     rndm_results[spp,trial] <- harvard_game(rndm_choices[spp,trial])
@@ -91,8 +91,11 @@ for(spp in 1:sims_per_parameter){
 }
 
 
-
-
+# results <- wsls_results[1,]
+# choices <- wsls_choices[1,]
+# alternative <- 'short_term'
+# results
+# choices
 
 
 add_tseries <- function(results_array,choices_array,alternative){
@@ -101,8 +104,9 @@ add_tseries <- function(results_array,choices_array,alternative){
     choices <- wsls_choices[i,]
     
     points(which(choices==alternative),
-           cumsum(results=='win')[choices==alternative]/cumsum(choices==alternative)[choices==alternative],
-           type='l',lwd=2,col='#00000005')
+           (cumsum(choices==alternative&results=='win')/cumsum(choices==alternative))[choices==alternative],
+           type='l',lwd=1,col='#00000015')
+    
   }
 }
 
@@ -135,23 +139,34 @@ add_winmargin <- function(results_array,choices_array,alternative){
 
 display_alternative <- function(alternative) {
   
-  par(mar=c(5,4,4,2))
-  plot(0,type='n',xlim=c(1,n_trials),ylim=c(-.25,1.25))
+  par(mar=c(5,6,4,1))
+  plot(0,type='n',xlim=c(1,n_trials),ylim=c(-.25,1.25),ann=F,axes=F)
+  lines(c(1,n_trials),rep(0.5,2),lty='dashed')
   add_tseries(wsls_results,wsls_choices,alternative)
+  axis(1,at=c(1,seq(200,n_trials,200)))
+  axis(2,at=c(0,1))
+  mtext(paste('proportion of wins at ',alternative),2,line=2)
+  mtext('trials',1,line=3)
+  mtext(alternative,2,line=4,cex=1.5)
   
   par(mar=c(5,4,4,0))
-  plot(0,type='n',xlim=c(1,n_trials),ylim=c(1,n_trials))
+  plot(0,type='n',xlim=c(1,n_trials),ylim=c(1,n_trials),ann=F,axes=F)
   add_cumrec(wsls_results,wsls_choices,alternative)
+  axis(2,at=c(1,seq(400,n_trials,400)))
+  axis(1,at=c(1,seq(400,n_trials,400)))
+  mtext(paste('cumulative',alternative),1,line=3)
+  mtext(paste('cumulative wins at ',alternative),2,line=2)
   
   par(mar=c(5,0,4,2))
-  plot(0,type='n',xlim=c(-.5,1.5),ylim=c(0,n_trials))
+  plot(0,type='n',xlim=c(-.5,1.5),ylim=c(0,n_trials),ann=F,axes=F)
   add_winmargin(wsls_results,wsls_choices,alternative)
+  axis(1,at=c(0,1),labels=c('wins','losses'))
   
 }
 
 
 pdf(file='wsls_sim_Hgame.pdf',width=11,height=8)
-layout(matrix(1:6,ncol=3,byrow=T),widths=c(2,1,1))
+layout(matrix(1:6,ncol=3,byrow=T),widths=c(2,1.5,1))
 display_alternative('short_term')
 display_alternative('long_term')
 dev.off()
