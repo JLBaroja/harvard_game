@@ -86,7 +86,7 @@ for(spp in 1:sims_per_parameter){
     wsls_states[spp,trial] <- pos
     wsls_choices[spp,trial] <- wsls(previous_choice=previous_choice_wsls,
                                     previous_result=previous_result_wsls,
-                                    trial=trial,theta=.2)
+                                    trial=trial,theta=.85)
     # rndm_choices[spp,trial] <- rndm(theta=.8)
     wsls_results[spp,trial] <- harvard_game(wsls_choices[spp,trial]) # Careful with global variable 'pos'
     # rndm_results[spp,trial] <- harvard_game(rndm_choices[spp,trial]) # ibid.
@@ -159,7 +159,7 @@ add_win_margin <- function(results_array,choices_array,alternative){
 add_states_series <- function(states_array){
   for(i in 1:dim(states_array)[1]){
     lines(1:n_trials,states_array[i,],
-          lwd=1,col='#00000011')
+          lwd=1,col='#00000022')
   }
 }
 
@@ -199,7 +199,7 @@ display_alternative <- function(alternative) {
   axis(1,at=c(0,1),labels=c('wins','losses'))
   
   par(mar=c(5,6,4,1))
-  plot(0,type='n',xlim=c(1,n_trials),ylim=c(1,11),ann=F,axes=F)
+  plot(0,type='n',xlim=c(1,400),ylim=c(1,11),ann=F,axes=F)
   add_states_series(wsls_states)
   axis(1,at=c(1,seq(200,n_trials,200)))
   axis(2,at=1:11)
@@ -215,10 +215,36 @@ display_alternative <- function(alternative) {
   mtext('# of visits',1,line=3)
 }
 
+cumcum_alternatives <- function(choices) {
+  plot(0,type='n',xlim=c(1,1500),ylim=c(1,1500),ann=F)
+  abline(0,1,lty='dashed',col='#ee0000',lwd=2)
+  for(k in 1:dim(choices)[1]){
+    lines(cumsum(choices[k,]=='short_term'),
+          cumsum(choices[k,]!='short_term'),
+          lwd=3,col='#00000011')
+  }
+  mtext('cumulative long term choices',2,line=3)
+  mtext('cumulative short term choices',1,line=3)
+}
 
-pdf(file='wsls_vs_Hgame.pdf',width=20,height=8)
-layout(matrix(1:10,ncol=5,byrow=T),widths=c(2,1,.5,2,1))
+cumcum_results <- function(results) {
+  plot(0,type='n',xlim=c(1,1500),ylim=c(1,1500),ann=F)
+  abline(0,1,lty='dashed',col='#ee0000',lwd=2)
+  for(k in 1:dim(results)[1]){
+    lines(cumsum(results[k,]=='win'),
+          cumsum(results[k,]!='win'),
+          lwd=3,col='#00000011')
+  }
+  mtext('cumulative losses',2,line=3)
+  mtext('cumulative wins',1,line=3)
+}
+
+pdf(file='wsls_vs_Hgame.pdf',width=22,height=6.5)
+layout(cbind(matrix(1:10,ncol=5,byrow=T),11:12),
+       widths=c(1.5,1,.5,1.5,1,1))
 par(oma=c(0,2,0,0))
 display_alternative('short_term')
 display_alternative('long_term')
+cumcum_alternatives(wsls_choices)
+cumcum_results(wsls_results)
 dev.off()
