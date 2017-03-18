@@ -86,7 +86,7 @@ for(spp in 1:sims_per_parameter){
     wsls_states[spp,trial] <- pos
     wsls_choices[spp,trial] <- wsls(previous_choice=previous_choice_wsls,
                                     previous_result=previous_result_wsls,
-                                    trial=trial,theta=.85)
+                                    trial=trial,theta=0)
     # rndm_choices[spp,trial] <- rndm(theta=.8)
     wsls_results[spp,trial] <- harvard_game(wsls_choices[spp,trial]) # Careful with global variable 'pos'
     # rndm_results[spp,trial] <- harvard_game(rndm_choices[spp,trial]) # ibid.
@@ -96,8 +96,9 @@ for(spp in 1:sims_per_parameter){
 }
 
 
-# results <- wsls_results[1,]
-# choices <- wsls_choices[1,]
+results <- wsls_results[1,]
+choices <- wsls_choices[1,]
+states <- wsls_states[1,]
 # alternative <- 'short_term'
 # results
 # choices
@@ -117,14 +118,23 @@ for(spp in 1:sims_per_parameter){
 # }
 
 
-add_tseries <- function(results_array,choices_array,alternative){
+add_tseries <- function(results_array,choices_array,states_array,alternative){
   for(i in 1:dim(results_array)[1]){
     results <- results_array[i,]
     choices <- choices_array[i,]
+    states <- states_array[i,]
+    # alternative <- 'long_term'
     
-    points(which(choices==alternative),
-           (cumsum(choices==alternative&results=='win')/cumsum(choices==alternative))[choices==alternative],
-           type='l',lwd=1,col='#00000015')
+    state_colors <- rainbow(11,alpha=.4)
+    for(stt in 1:11){
+      stt_indx <- which(states==stt&choices==alternative)
+      
+      xx <- stt_indx
+      yy <- cumsum(results[stt_indx]=='win')/cumsum(choices==alternative&states==stt)[stt_indx]
+      
+      points(xx,yy,type='l',lwd=.2,col=state_colors[stt])
+    }
+    
     
   }
 }
@@ -177,7 +187,8 @@ display_alternative <- function(alternative) {
   par(mar=c(5,6,4,1))
   plot(0,type='n',xlim=c(1,n_trials),ylim=c(-.25,1.25),ann=F,axes=F)
   lines(c(1,n_trials),rep(0.5,2),lty='dashed')
-  add_tseries(wsls_results,wsls_choices,alternative)
+  polygon(c(1,n_trials,n_trials,1),c(rep(0,2),rep(1,2)),border=F,col='#000000')
+  add_tseries(wsls_results,wsls_choices,wsls_states,alternative)
   axis(1,at=c(1,seq(200,n_trials,200)))
   axis(2,at=c(0,1))
   mtext(paste('proportion of wins at ',alternative),2,line=3)
