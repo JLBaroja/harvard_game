@@ -86,7 +86,7 @@ for(spp in 1:sims_per_parameter){
     wsls_states[spp,trial] <- pos
     wsls_choices[spp,trial] <- wsls(previous_choice=previous_choice_wsls,
                                     previous_result=previous_result_wsls,
-                                    trial=trial,theta=0)
+                                    trial=trial,theta=1)
     # rndm_choices[spp,trial] <- rndm(theta=.8)
     wsls_results[spp,trial] <- harvard_game(wsls_choices[spp,trial]) # Careful with global variable 'pos'
     # rndm_results[spp,trial] <- harvard_game(rndm_choices[spp,trial]) # ibid.
@@ -185,7 +185,7 @@ add_states_margin <- function(states_array) {
 display_alternative <- function(alternative) {
   
   par(mar=c(5,6,4,1))
-  plot(0,type='n',xlim=c(1,n_trials),ylim=c(-.25,1.25),ann=F,axes=F)
+  plot(0,type='n',xlim=c(1,n_trials),ylim=c(0,1),ann=F,axes=F)
   lines(c(1,n_trials),rep(0.5,2),lty='dashed')
   polygon(c(1,n_trials,n_trials,1),c(rep(0,2),rep(1,2)),border=F,col='#000000')
   add_tseries(wsls_results,wsls_choices,wsls_states,alternative)
@@ -239,7 +239,7 @@ cumcum_alternatives <- function(choices) {
 }
 
 cumcum_results <- function(results) {
-  plot(0,type='n',xlim=c(1,1500),ylim=c(1,1500),ann=F)
+  plot(0,type='n',xlim=c(1,2000),ylim=c(1,2000),ann=F)
   abline(0,1,lty='dashed',col='#ee0000',lwd=2)
   for(k in 1:dim(results)[1]){
     lines(cumsum(results[k,]=='win'),
