@@ -21,11 +21,19 @@
 \X: counter of responses in maXimization (min at 0, max at W)
 \P: probability of reinforcement in each trial
 
+\arrays
+DIM A = 10000 \ Real time events
+DIM B = 6000 \ Trial level events
+
+
 \ Program start; main time counter
 S.S.1, 
 S1,
 #START: on^white_noise;
 	on^chamber_light;
+	set W = 6; \ Temporal window
+	set X = 3; \ Starting state in the game
+	set E = 0; \ Index of array A
 	Z1 ---> S2 \ To first trial
 
 S2,
@@ -38,7 +46,8 @@ S2,
 \ Trial start
 S.S.2,
 S1,
-#Z1: ---> S2
+#Z1: add E;
+	set A(E-1)=T+.5 ---> S2
 
 S2,
 5": off^chamber_light ---> S3
@@ -92,7 +101,9 @@ S3,
 \ Feeder
 S.S.5,
 S1,
-#Z3: on^feeder ---> S2
+#Z3: on^feeder;
+	add E;
+	set A(E-1)=T+.4 ---> S2
 
 S2,
 3": off^feeder;
@@ -114,5 +125,23 @@ S2,
 2": on^chamber_light; 
 	Z1 ---> SX \ Start next trial
 
+
+\ Recorder of all MAX responses times
+S.S.8,
+S1,
+#R^maximization_key: add E;
+			set A(E-1)=T+.1 ---> SX
+
+\ Recorder of all MEL responses times
+S.S.9,
+S1,
+#R^melioration_key: add E;
+			set A(E-1)=T+.3 ---> SX 
+ 
+\ Recorder of all CEN responses times
+S.S.10,
+S1,
+#R^central_key: add E;
+			set A(E-1)=T+.2 ---> SX
 
 
