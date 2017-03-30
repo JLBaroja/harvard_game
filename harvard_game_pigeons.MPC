@@ -25,6 +25,33 @@
 DIM A = 10000 \ Real time events
 DIM B = 6000 \ Trial level events
 
+\event key (real time)
+\.01: Response in maximization key 
+\.02: Response in central key
+\.03: Response in melioration key
+\.05: Trial start
+\.06: Maximization key ON
+\.07: Central key ON
+\.08: Melioration key ON
+\.09: Feeder ON
+\.11: Maximization key OFF
+\.12: Central key OFF
+\.13: Melioration key OFF
+\.14: Feeder OFF
+\.25: Chamber light ON
+\.26: Chamber light OFF
+\.35: White noise ON
+\.36: White noise OFF 
+
+\event key (trial)
+\: Chose maximization 
+\: Chose melioration
+\: Trial rewarded
+\: Trial not rewarded
+\: State of the game (that operated in THIS trial)
+\: Scheduled P (given a state AND a choice) 
+ 
+
 
 \ Program start; main time counter
 S.S.1, 
@@ -47,7 +74,7 @@ S2,
 S.S.2,
 S1,
 #Z1: add E;
-	set A(E-1)=T+.5 ---> S2
+	set A(E-1)=T+.05 ---> S2
 
 S2,
 5": off^chamber_light ---> S3
@@ -103,7 +130,7 @@ S.S.5,
 S1,
 #Z3: on^feeder;
 	add E;
-	set A(E-1)=T+.4 ---> S2
+	set A(E-1)=T+.09 ---> S2
 
 S2,
 3": off^feeder;
@@ -130,18 +157,18 @@ S2,
 S.S.8,
 S1,
 #R^maximization_key: add E;
-			set A(E-1)=T+.1 ---> SX
+			set A(E-1)=T+.01 ---> SX
 
 \ Recorder of all MEL responses times
 S.S.9,
 S1,
 #R^melioration_key: add E;
-			set A(E-1)=T+.3 ---> SX 
+			set A(E-1)=T+.03 ---> SX 
  
 \ Recorder of all CEN responses times
 S.S.10,
 S1,
 #R^central_key: add E;
-			set A(E-1)=T+.2 ---> SX
+			set A(E-1)=T+.02 ---> SX
 
 
