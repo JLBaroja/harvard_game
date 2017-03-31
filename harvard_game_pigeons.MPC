@@ -31,70 +31,88 @@ DIM L = 1 \ Trial time counter
 	\ L(0) = RTime from on^central_light til response on that key
 	\ L(1) = RTime from on^alternatives til response on any of them
 
-\event key (real time)
-\.01: Response in maximization key 
-\.02: Response in central key
-\.03: Response in melioration key
-\.05: Trial start
-\.06: Maximization light ON
-\.07: Central light ON
-\.08: Melioration light ON
-\.09: Feeder ON
-\.11: Maximization light OFF
-\.12: Central light OFF
-\.13: Melioration light OFF
-\.14: Feeder OFF
-\.25: Chamber light ON
-\.26: Chamber light OFF
-\.35: White noise ON
-\.36: White noise OFF 
+\ Z-pulses
+\ Z1:
+\ Z2:
+\ Z3:
+\ Z4:
+\ Z5:
+\ Z6:
 
-\event key (trial)
-\: Chose maximization 
-\: Chose melioration
-\: Trial rewarded
-\: Trial not rewarded
-\: State of the game (that operated in THIS trial)
-\: Scheduled P (given a state AND a choice) 
- 
+\event key (real Time array)
+\T.11: Response in maximization key 
+\T.12: Response in central key
+\T.13: Response in melioration key
+\T.15: Trial start
+\T.16: Maximization light ON
+\T.17: Central light ON
+\T.18: Melioration light ON
+\T.19: Feeder ON
+\T.21: Maximization light OFF
+\T.22: Central light OFF
+\T.23: Melioration light OFF
+\T.24: Feeder OFF
+\T.35: Chamber light ON
+\T.36: Chamber light OFF
+\T.45: White noise ON
+\T.46: White noise OFF 
+
+\event key (trial array)
+\80510.tttt: Chose maximization 
+\80530.tttt: Chose melioration
+\80690.tttt: Trial rewarded
+\80790.tttt: Trial not rewarded
+\800X0.tttt: State of the game (that operated in THIS trial)
+\80XXX.tttt: Scheduled P (given a state AND a choice) 
+\70XXXXXX.tttt: Reaction time central light
+\60XXXXXX.tttt: Reaction time alternatives
+\50XXXXXX.tttt: Time of trial start 
+
 
 
 \ Program start; main time counter
 S.S.1, 
 S1,
-#START: on^white_noise; add E; set A(E-1)=T+.35;
-	on^chamber_light; add E; set A(E-1)=T+.25;
+#START: on^white_noise; add E; set A(E-1)=T+.45;
+	on^chamber_light; add E; set A(E-1)=T+.35;
 	set W = 6; \ Temporal window
 	set X = 3; \ Starting state in the game
 	set E = 0; \ Index of array A
-	set F = 0; \ Index of array B
+	set F = 0; \ Index of array B 
 	set I = 0; \ Trial counter
 	Z1 ---> S2 \ To first trial
 
 S2,
 0.01": add T;
 	if T>=6000 [@T,@F]
-	@T: off^white_noise; add E; set A(E-1)=T+.36 ---> STOPABORTFLUSH
+	@T: off^white_noise; add E; set A(E-1)=T+.46; PRINT ---> STOPABORTFLUSH
 	@F: ---> SX
+
 
 
 \ Trial start
 S.S.2,
 S1,
 #Z1: add I;
-	add E; set A(E-1)=T+.05 ---> S2
+	add F; set B(F-1)=50000000+T+I/1000; \ Record time of trial start
+	add F; set B(F-1)=80000+X*10+I/1000; \ Record state that operates in trial
+	add E; set A(E-1)=T+.15; SHOW F ---> S2
 
 S2,
-5": off^chamber_light; add E; set A(E-1)=T+.26 ---> S3
+5": off^chamber_light; add E; set A(E-1)=T+.36 ---> S3
 
 S3,
-2": on^central_light; add E; set A(E-1)=T+.07 ---> S4
+2": on^central_light; add E; set A(E-1)=T+.17;
+			set L(0)=T  ---> S4
 
 S4,
-#R^central_key: off^central_light; add E; set A(E-1)=T+.12;
-		on^melioration_light; add E; set A(E-1)=T+.08;
-		on^maximization_light; add E; set A(E-1)=T+.06;		
+#R^central_key: off^central_light; add E; set A(E-1)=T+.22; 
+					add F; set B(F-1)=70000000+T-L(0)+I/1000; 
+		on^melioration_light; add E; set A(E-1)=T+.18;
+		on^maximization_light; add E; set A(E-1)=T+.16;	
+		set L(1)=T;	
 		Z2 ---> SX \ Wait for peck in any lateral key
+
 
 
 \ Wait for peck in MELIORATION
@@ -103,16 +121,13 @@ S1,
 #Z2: ---> S2
 
 S2,
-#R^melioration_key: Z5; \ Turn keys off
+#R^melioration_key: add F; set B(F-1)=80530+I/1000; 
+		set P=((1/3)*(X/W))*10000;
+		Z5; \ Turn keys off
 		if X>0 [@T,@F]
-			@T: set X = X-1 ---> S3
-			@F: ---> S3
+			@T: set X = X-1; Z6 ---> SX
+			@F: Z6 ---> SX
 
-S3, 
-0.01": set P=((1/3)*(X/W))*10000;
-	WITHPI=P[@T,@F]
-		@T: Z3 ---> SX \ To feeder
-		@F: Z4 ---> SX \ To next trial
 
 
 \ Wait for peck in MAXIMIZATION
@@ -121,58 +136,65 @@ S1,
 #Z2: ---> S2
 
 S2,
-#R^maximization_key: Z5; \ Turn keys off
-		if X=W[@T,@F]
-			@T: ---> S3
-			@F: add X ---> S3
+#R^maximization_key: add F; set B(F-1)=80510+I/1000;
+		set P=((1/3)+(1/3)*(X/W))*10000; \ Set probability of reward
+		Z5; \ Turn keys off
+		if X=W[@T,@F] \ Update X after setting P
+			@T: Z6 ---> SX
+			@F: add X; Z6 ---> SX
+ 
 
-S3, 
-0.01": set P=((1/3)+(1/3)*(X/W))*10000;
+
+\ Trial result
+S.S.5,
+S1,
+#Z6: add F; set B(F-1)=8000000+P;
 	WITHPI=P[@T,@F]
 		@T: Z3 ---> SX \ Feeder
 		@F: Z4 ---> SX \ Next trial
 
 
+
 \ Feeder
-S.S.5,
+S.S.6,
 S1,
-#Z3: on^feeder; add E; set A(E-1)=T+.09 ---> S2
+#Z3: on^feeder; add E; set A(E-1)=T+.19 ---> S2
 
 S2,
-3": off^feeder; add E; set A(E-1)=T+.14; 
+3": off^feeder; add E; set A(E-1)=T+.24; 
 	Z4 ---> SX \ To next trial 
 
 
 \ Turn keys off
-S.S.6,
+S.S.7,
 S1,
-#Z5: off^melioration_light;  add E; set A(E-1)=T+.13; 
-	off^maximization_light; add E; set A(E-1)=T+.11 ---> SX
+#Z5: off^melioration_light;  add E; set A(E-1)=T+.23; 
+	off^maximization_light; add E; set A(E-1)=T+.21 ---> SX
 
 
 \ Next trial 
-S.S.7,
+S.S.8,
 S1,
 #Z4 ---> S2
 
 S2,
-2": on^chamber_light; add E; set A(E-1)=T+.25;
+2": on^chamber_light; add E; set A(E-1)=T+.35;
 	Z1 ---> SX \ Start next trial
 
 
 \ Recording all MAX responses times
-S.S.8,
-S1,
-#R^maximization_key: add E; set A(E-1)=T+.01 ---> SX
-
-\ Recording all MEL responses times
 S.S.9,
 S1,
-#R^melioration_key: add E; set A(E-1)=T+.03 ---> SX 
- 
-\ Recording all CEN responses times
+#R^maximization_key: add E; set A(E-1)=T+.11 ---> SX
+
+\ Recording all MEL responses times
 S.S.10,
 S1,
-#R^central_key: add E; set A(E-1)=T+.02 ---> SX
+#R^melioration_key: add E; set A(E-1)=T+.13 ---> SX 
+ 
+\ Recording all CEN responses times
+S.S.11,
+S1,
+#R^central_key: add E; set A(E-1)=T+.12 ---> SX
 
 
