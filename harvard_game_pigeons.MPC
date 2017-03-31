@@ -3,17 +3,16 @@
 \ March 2017
 
 \inputs
-^melioration_key=
-^maximization_key=
-^central_key=
+^melioration_key=2
+^maximization_key=3
+^central_key=1
 
 \outputs
-^feeder=
-^melioration_light=
-^maximization_light=
-^central_light=
-^chamber_light=
-^white_noise=
+^feeder=12
+^melioration_light=5
+^maximization_light=9
+^central_light=1
+^chamber_light=14
 
 \variables
 \T: session time (sec/100)
@@ -32,12 +31,12 @@ DIM L = 1 \ Trial time counter
 	\ L(1) = RTime from on^alternatives til response on any of them
 
 \ Z-pulses
-\ Z1:
-\ Z2:
-\ Z3:
-\ Z4:
-\ Z5:
-\ Z6:
+\ Z1: To trial start
+\ Z2: To wait for peck from any alternative
+\ Z3: To feeder
+\ Z4: To next trial
+\ Z5: To turn off alternative lights
+\ Z6: To trial result
 
 \event key (real Time array)
 \T.11: Response in maximization key 
@@ -53,9 +52,7 @@ DIM L = 1 \ Trial time counter
 \T.23: Melioration light OFF
 \T.24: Feeder OFF
 \T.35: Chamber light ON
-\T.36: Chamber light OFF
-\T.45: White noise ON
-\T.46: White noise OFF 
+\T.36: Chamber light OFF 
 
 \event key (trial array)
 \80510.tttt: Chose maximization 
@@ -73,8 +70,7 @@ DIM L = 1 \ Trial time counter
 \ Program start; main time counter
 S.S.1, 
 S1,
-#START: on^white_noise; add E; set A(E-1)=T+.45;
-	on^chamber_light; add E; set A(E-1)=T+.35;
+#START: on^chamber_light; add E; set A(E-1)=T+.35;
 	set W = 6; \ Temporal window
 	set X = 3; \ Starting state in the game
 	set E = 0; \ Index of array A
@@ -85,7 +81,7 @@ S1,
 S2,
 0.01": add T;
 	if T>=6000 [@T,@F]
-	@T: off^white_noise; add E; set A(E-1)=T+.46; PRINT ---> STOPABORTFLUSH
+	@T: PRINT ---> STOPABORTFLUSH
 	@F: ---> SX
 
 
