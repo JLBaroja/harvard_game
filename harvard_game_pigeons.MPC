@@ -63,7 +63,7 @@ DIM L = 1 \ Trial time counter
 \80690.tttt: Trial rewarded
 \80790.tttt: Trial not rewarded
 \800X0.tttt: State of the game (that operated in THIS trial)
-\80XXX.tttt: Scheduled P (given a state AND a choice) 
+\80XXXXX.tttt: Scheduled P (given a state AND a choice) 
 \70XXXXXX.tttt: Reaction time central light
 \60XXXXXX.tttt: Reaction time alternatives
 \50XXXXXX.tttt: Time of trial start 
@@ -118,7 +118,7 @@ S4,
 \ Wait for peck in MELIORATION
 S.S.3,
 S1,
-#Z2: ---> S2
+#Z2: add F; set B(F-1)=60000000+T-L(1)+I/1000---> S2
 
 S2,
 #R^melioration_key: add F; set B(F-1)=80530+I/1000; 
@@ -133,7 +133,7 @@ S2,
 \ Wait for peck in MAXIMIZATION
 S.S.4,
 S1,
-#Z2: ---> S2
+#Z2: add F; set B(F-1)=60000000+T-L(1)+I/1000---> S2
 
 S2,
 #R^maximization_key: add F; set B(F-1)=80510+I/1000;
@@ -142,7 +142,7 @@ S2,
 		if X=W[@T,@F] \ Update X after setting P
 			@T: Z6 ---> SX
 			@F: add X; Z6 ---> SX
- 
+
 
 
 \ Trial result
@@ -150,8 +150,8 @@ S.S.5,
 S1,
 #Z6: add F; set B(F-1)=8000000+P;
 	WITHPI=P[@T,@F]
-		@T: Z3 ---> SX \ Feeder
-		@F: Z4 ---> SX \ Next trial
+		@T: add F; set B(F-1)=80690+I/1000; Z3 ---> SX \ Feeder
+		@F: add F; set B(F-1)=80790+I/1000; Z4 ---> SX \ Next trial
 
 
 
@@ -165,11 +165,13 @@ S2,
 	Z4 ---> SX \ To next trial 
 
 
+
 \ Turn keys off
 S.S.7,
 S1,
 #Z5: off^melioration_light;  add E; set A(E-1)=T+.23; 
 	off^maximization_light; add E; set A(E-1)=T+.21 ---> SX
+
 
 
 \ Next trial 
@@ -182,15 +184,20 @@ S2,
 	Z1 ---> SX \ Start next trial
 
 
+
 \ Recording all MAX responses times
 S.S.9,
 S1,
 #R^maximization_key: add E; set A(E-1)=T+.11 ---> SX
 
+
+
 \ Recording all MEL responses times
 S.S.10,
 S1,
 #R^melioration_key: add E; set A(E-1)=T+.13 ---> SX 
+
+
  
 \ Recording all CEN responses times
 S.S.11,
