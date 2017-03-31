@@ -17,26 +17,32 @@
 
 \variables
 \T: session time (sec/100)
+\I: trial counter 
 \W: hgame temporal window (number of trials that determine state)
 \X: counter of responses in maXimization (min at 0, max at W)
 \P: probability of reinforcement in each trial
+\E: index of array A
+\F: index of array B
 
 \arrays
 DIM A = 10000 \ Real time events
-DIM B = 6000 \ Trial level events
+DIM B = 6000 \ Trial-level events
+DIM L = 1 \ Trial time counter
+	\ L(0) = RTime from on^central_light til response on that key
+	\ L(1) = RTime from on^alternatives til response on any of them
 
 \event key (real time)
 \.01: Response in maximization key 
 \.02: Response in central key
 \.03: Response in melioration key
 \.05: Trial start
-\.06: Maximization key ON
-\.07: Central key ON
-\.08: Melioration key ON
+\.06: Maximization light ON
+\.07: Central light ON
+\.08: Melioration light ON
 \.09: Feeder ON
-\.11: Maximization key OFF
-\.12: Central key OFF
-\.13: Melioration key OFF
+\.11: Maximization light OFF
+\.12: Central light OFF
+\.13: Melioration light OFF
 \.14: Feeder OFF
 \.25: Chamber light ON
 \.26: Chamber light OFF
@@ -56,36 +62,38 @@ DIM B = 6000 \ Trial level events
 \ Program start; main time counter
 S.S.1, 
 S1,
-#START: on^white_noise;
-	on^chamber_light;
+#START: on^white_noise; add E; set A(E-1)=T+.35;
+	on^chamber_light; add E; set A(E-1)=T+.25;
 	set W = 6; \ Temporal window
 	set X = 3; \ Starting state in the game
 	set E = 0; \ Index of array A
+	set F = 0; \ Index of array B
+	set I = 0; \ Trial counter
 	Z1 ---> S2 \ To first trial
 
 S2,
 0.01": add T;
-	if T>=3000 [@T,@F]
-	@T: ---> STOPABORTFLUSH
+	if T>=6000 [@T,@F]
+	@T: off^white_noise; add E; set A(E-1)=T+.36 ---> STOPABORTFLUSH
 	@F: ---> SX
 
 
 \ Trial start
 S.S.2,
 S1,
-#Z1: add E;
-	set A(E-1)=T+.05 ---> S2
+#Z1: add I;
+	add E; set A(E-1)=T+.05 ---> S2
 
 S2,
-5": off^chamber_light ---> S3
+5": off^chamber_light; add E; set A(E-1)=T+.26 ---> S3
 
 S3,
-2": on^central_light ---> S4
+2": on^central_light; add E; set A(E-1)=T+.07 ---> S4
 
 S4,
-#R^central_key: off^central_light;
-		on^melioration_light;
-		on^maximization_light;		
+#R^central_key: off^central_light; add E; set A(E-1)=T+.12;
+		on^melioration_light; add E; set A(E-1)=T+.08;
+		on^maximization_light; add E; set A(E-1)=T+.06;		
 		Z2 ---> SX \ Wait for peck in any lateral key
 
 
@@ -128,19 +136,18 @@ S3,
 \ Feeder
 S.S.5,
 S1,
-#Z3: on^feeder;
-	add E;
-	set A(E-1)=T+.09 ---> S2
+#Z3: on^feeder; add E; set A(E-1)=T+.09 ---> S2
 
 S2,
-3": off^feeder;
+3": off^feeder; add E; set A(E-1)=T+.14; 
 	Z4 ---> SX \ To next trial 
 
 
 \ Turn keys off
 S.S.6,
 S1,
-#Z5: off^melioration_light; off^maximization_light ---> SX
+#Z5: off^melioration_light;  add E; set A(E-1)=T+.13; 
+	off^maximization_light; add E; set A(E-1)=T+.11 ---> SX
 
 
 \ Next trial 
@@ -149,26 +156,23 @@ S1,
 #Z4 ---> S2
 
 S2,
-2": on^chamber_light; 
+2": on^chamber_light; add E; set A(E-1)=T+.25;
 	Z1 ---> SX \ Start next trial
 
 
-\ Recorder of all MAX responses times
+\ Recording all MAX responses times
 S.S.8,
 S1,
-#R^maximization_key: add E;
-			set A(E-1)=T+.01 ---> SX
+#R^maximization_key: add E; set A(E-1)=T+.01 ---> SX
 
-\ Recorder of all MEL responses times
+\ Recording all MEL responses times
 S.S.9,
 S1,
-#R^melioration_key: add E;
-			set A(E-1)=T+.03 ---> SX 
+#R^melioration_key: add E; set A(E-1)=T+.03 ---> SX 
  
-\ Recorder of all CEN responses times
+\ Recording all CEN responses times
 S.S.10,
 S1,
-#R^central_key: add E;
-			set A(E-1)=T+.02 ---> SX
+#R^central_key: add E; set A(E-1)=T+.02 ---> SX
 
 
