@@ -1,4 +1,4 @@
-import pandas as pd 
+import pandas as pd
 import os
 
 
@@ -39,7 +39,7 @@ def caterpillar(file_name,array):
 				# magic_number=len(line.split())
 				found=True
 				#block='Start'
-	# print magic_number	
+	# print magic_number
 
 	times=[]
 	events=[]
@@ -70,7 +70,6 @@ def caterpillar(file_name,array):
 	# print block[0]
 	# #print block[[0,3,13]]
 	# return subject, experiment, group, file_name#, block
- 	
  	# for b in len(block):
  		# print b
 
