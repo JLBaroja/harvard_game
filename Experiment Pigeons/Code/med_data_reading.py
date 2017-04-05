@@ -41,16 +41,18 @@ def caterpillar(file_name,array):
 				#block='Start'
 	# print magic_number
 
-	times=[]
-	events=[]
+	#times=[]
+	#events=[]
+	before_point=[]
+	after_point=[]
 	for d1 in range(len(block)):
 		for d2 in range(len(block[d1])):
-			times.append(int(block[d1][d2].split('.')[0]))
-			events.append(block[d1][d2].split('.')[1])
+			before_point.append(block[d1][d2].split('.')[0])
+			after_point.append(block[d1][d2].split('.')[1])
 
 	output={'raw_block':block,
-		'times':times,
-		'events':events,
+		'before_point':before_point,
+		'after_point':after_point,
 		'condition':group,
 		'experiment_name':experiment,
 		'experiment_program':msn,
@@ -80,15 +82,16 @@ def hatter(file_name,array):
 	MED file and returns it in a pandas dataframe
 	"""
 	extraction=caterpillar(file_name,array)
-	base={'time':extraction['times'],'event':extraction['events'],
+	base={'before_point':extraction['before_point'],'after_point':extraction['after_point'],
 		'subject':extraction['subject'],'box':extraction['box'],
 		'date':extraction['date'],'session_start':extraction['session_start'],
 		'session_end':extraction['session_end'],'condition':extraction['condition'],
 		'experiment_name':extraction['experiment_name'],
 		'experiment_program':extraction['experiment_program']}
 	data_frame=pd.DataFrame(base)
+	data_frame=data_frame.ix[(data_frame['before_point']!='0')&(data_frame['after_point']!='000')]
 	# data_frame['session_time']=data_frame['time'].cumsum()/10.
-	data_frame['time']=data_frame['time']/100.
+	# data_frame['time']=data_frame['time']/100.
 	# data_frame.to_csv('file_name.csv')
 	return data_frame
 
@@ -108,7 +111,7 @@ def alice(files,array):
 def cheshire(base_directory,array):
 	"""
 	Function that makes a .csv with data from all files in each
-	subdirectory in base_directory (builds full_data_perla.csv)
+	subdirectory in base_directory (builds full_data.csv)
 	"""
 	subdirs=[x[0] for x in os.walk(base_directory)]
 	ultraglobal_df=pd.DataFrame()
@@ -120,7 +123,7 @@ def cheshire(base_directory,array):
 		frames=[ultraglobal_df,alice(os.listdir(dire),array)]
 		ultraglobal_df=pd.concat(frames)
 	os.chdir(base_directory)
-	ultraglobal_df.to_csv('full_data_perla.csv')
+	ultraglobal_df.to_csv('full_data.csv')
 	return ultraglobal_df
 
 
