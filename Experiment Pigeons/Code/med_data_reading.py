@@ -96,6 +96,33 @@ def hatter(file_name,array):
 	return data_frame
 
 
+def real_time(file_name):
+	"""
+	Extracts event ocurrence in real time
+	"""
+	events={'110':'resp_max_key',
+		'120':'resp_central_key',
+		'130':'resp_mel_key',
+		'150':'trial_start',
+		'160':'max_light_on',
+		'170':'central_light_on',
+		'180':'mel_light_on',
+		'190':'feeder_on',
+		'210':'max_light_off',
+		'220':'central_light_off',
+		'230':'mel_light_off',
+		'240':'feeder_off',
+		'350':'chamber_light_on',
+		'360':'chamber_light_off'}
+	df=hatter(file_name,'A')
+	df['event']=0
+	df['session_time']=0.
+	for ii in range(len(df)):
+		df['event'][ii+1]=events[df['after_point'][ii+1]]
+		df['session_time'][ii+1]=float(df['before_point'][ii+1])/100.
+	return df
+
+
 def alice(files,array):
 	"""
 	Function that extracts data from array from all files in list
