@@ -43,6 +43,8 @@ DIM L = 1 \ Trial time counter
 \ Z6: To trial result
 
 \event key (real Time array)
+\ TO DO: add marker for session start
+\ TO DO: add marker at trial end
 \T.11: Response in maximization key 
 \T.12: Response in central key
 \T.13: Response in melioration key
