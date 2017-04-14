@@ -89,7 +89,7 @@ def hatter(file_name,array):
 		'experiment_name':extraction['experiment_name'],
 		'experiment_program':extraction['experiment_program']}
 	data_frame=pd.DataFrame(base)
-	data_frame=data_frame.ix[(data_frame['before_point']!='0')&(data_frame['after_point']!='000')]
+	data_frame=data_frame.ix[(data_frame['after_point']!='000')]
 	# data_frame['session_time']=data_frame['time'].cumsum()/10.
 	# data_frame['time']=data_frame['time']/100.
 	# data_frame.to_csv('file_name.csv')
@@ -100,9 +100,11 @@ def real_time(file_name):
 	"""
 	Extracts event ocurrence in real time
 	"""
-	events={'110':'resp_max_key',
+	events={'010':'session_start',
+		'110':'resp_max_key',
 		'120':'resp_central_key',
 		'130':'resp_mel_key',
+		'140':'trial_end',
 		'150':'trial_start',
 		'160':'max_light_on',
 		'170':'central_light_on',
@@ -118,8 +120,8 @@ def real_time(file_name):
 	df['event']=0
 	df['session_time']=0.
 	for ii in range(len(df)):
-		df['event'][ii+1]=events[df['after_point'][ii+1]]
-		df['session_time'][ii+1]=float(df['before_point'][ii+1])/100.
+		df['event'][ii]=events[df['after_point'][ii]]
+		df['session_time'][ii]=float(df['before_point'][ii])/100.
 	return df
 
 
