@@ -18,18 +18,20 @@
 \T: session time (sec/100)
 \I: trial counter 
 \W: hgame temporal window (number of trials that determine state)
-\X: hgame state: counter of responses in maXimization (min at 0, max at W)
+\X: hgame state: counter of responses in maXimization (in last W choices: min at 0, max at W)
 \P: scheduled probability of reinforcement in each trial
 \E: index of array A
 \F: index of array B
+\Y: index of array Z
 
 \lists
-LIST G = 00000, 00556, 01111, 01667, 02222, 02778, 03333 \Pr(ref|melioration)
-LIST S = 03333, 03889, 04444, 05000, 05556, 06111, 06667 \Pr(ref|maximization)
+LIST S = 00000, 00556, 01111, 01667, 02222, 02778, 03333 \Pr(ref|maximization)
+LIST G = 03333, 03889, 04444, 05000, 05556, 06111, 06667 \Pr(ref|melioration)
 
 \arrays
 DIM A = 10000 \ Real time events
 DIM B = 6000 \ Trial-level events
+DIM Z = 10000 \ Real time z-pulses
 DIM L = 1 \ Trial time counter
 	\ L(0) = RTime from on^central_light til response on that key
 	\ L(1) = RTime from on^alternatives til response on any of them
@@ -81,9 +83,10 @@ S1,
 	set X = 3; \ Starting state in the game
 	set E = 0; \ Index of array A
 	set F = 0; \ Index of array B 
+	set Y = 0; \ Index of array Z
 	set I = 0; \ Trial counter
 	add E; set A(E-1)=T+.01; \ Record session start
-	Z1 ---> S2 \ To first trial
+	Z1; add Y; set Z(Y-1)=T+.01 ---> S2 \ To first trial
 
 S2,
 0.01": add T;
@@ -114,7 +117,7 @@ S4,
 		on^melioration_light; add E; set A(E-1)=T+.18;
 		on^maximization_light; add E; set A(E-1)=T+.16;	
 		set L(1)=T;	
-		Z2 ---> S1 \ To wait for peck in any lateral key
+		Z2; add Y; set Z(Y-1)=T+.02 ---> S1 \ To wait for peck in any lateral key
 
 
 
@@ -127,10 +130,10 @@ S2,
 #R^melioration_key: add F; set B(F-1)=530+I/1000;
 		add F; set B(F-1)=60000000+T-L(1)+I/1000; 
 		set P=G(X);
-		Z5; \ Turn keys off
+		Z5; add Y; set Z(Y-1)=T+.05; \ Turn keys off
 		if X>0 [@T,@F]
-			@T: set X = X-1; Z6 ---> S1
-			@F: Z6 ---> S1
+			@T: set X = X-1; Z6; add Y; set Z(Y-1)=T+.06 ---> S1
+			@F: Z6; add Y; set Z(Y-1)=T+.06 ---> S1
 
 
 
@@ -143,10 +146,10 @@ S2,
 #R^maximization_key: add F; set B(F-1)=510+I/1000;
 		add F; set B(F-1)=60000000+T-L(1)+I/1000;
 		set P=S(X); \ Set probability of reward
-		Z5; \ Turn keys off
+		Z5; add Y; set Z(Y-1)=T+.05; \ Turn keys off
 		if X=W [@T,@F] \ Update X after setting P
-			@T: Z6 ---> S1
-			@F: add X; Z6 ---> S1
+			@T: Z6; add Y; set Z(Y-1)=T+.06 ---> S1
+			@F: add X; Z6; add Y; set Z(Y-1)=T+.06 ---> S1
 
 
 
@@ -155,8 +158,8 @@ S.S.5,
 S1,
 #Z6: add F; set B(F-1)=80000000+P+I/1000;
 	WITHPI=P[@T,@F]
-		@T: add F; set B(F-1)=690+I/1000; Z3 ---> S1 \ Feeder
-		@F: add F; set B(F-1)=790+I/1000; Z4 ---> S1 \ Next trial
+		@T: add F; set B(F-1)=690+I/1000; Z3; add Y; set Z(Y-1)=T+.03 ---> S1 \ Feeder
+		@F: add F; set B(F-1)=790+I/1000; Z4; add Y; set Z(Y-1)=T+.04 ---> S1 \ Next trial
 
 
 
@@ -167,7 +170,7 @@ S1,
 
 S2,
 3": off^feeder; add E; set A(E-1)=T+.24; 
-	Z4 ---> S1 \ To next trial 
+	Z4; add Y; set Z(Y-1)=T+.04 ---> S1 \ To next trial 
 
 
 
@@ -185,7 +188,7 @@ S1,
 #Z4: add E; set A(E-1)=T+.14 ---> S2
 
 S2,
-2": on^chamber_light; add E; set A(E-1)=T+.35; Z1 ---> S1 \ Start next trial
+2": on^chamber_light; add E; set A(E-1)=T+.35; Z1; add Y; set Z(Y-1)=T+.01 ---> S1 \ Start next trial
 
 
 
