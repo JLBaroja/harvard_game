@@ -43,7 +43,6 @@ DIM L = 1 \ Trial time counter
 \ Z6: To trial result
 
 \event key (real Time array)
-\ TO DO: add marker for session start
 \T.01: Session start
 \T.11: Response in maximization key 
 \T.12: Response in central key
@@ -88,7 +87,7 @@ S1,
 
 S2,
 0.01": add T;
-	if T>=6000 [@T,@F]
+	if T>=12000 [@T,@F]
 	@T: ---> STOPABORTFLUSH
 	@F: ---> SX
 

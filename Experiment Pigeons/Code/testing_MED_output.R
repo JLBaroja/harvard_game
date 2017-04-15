@@ -41,33 +41,40 @@ interval_event <- function(event_name,
     
   }
   
+  add_event(name_on,y_coord=y_coord+bw*.8,pch=24,bg=color) 
+  add_event(name_off,y_coord=y_coord-bw*.8,pch=25,bg=color) 
+  
+  text(0,y_coord,event_name,adj=1,cex=1.5)
 }
+
   
 setwd(results_folder)
-pdf(file='test_results.pdf',width=15,height=5)
+# pdf(file='test_results.pdf',width=15,height=5)
+# dev.new(width=5,height=3)
+x11(width=20,height=5)
 par(bg='#999999',col.axis='#555555',fg='#777777')
 plot(0,type='n',
-     xlim=c(1,max(td$session_time)),
+     xlim=c(-max(td$session_time)*.1,
+            max(td$session_time)),
      ann=F,axes=F)
 axis(1,at=0:tail(ceiling(td$session_time),1),cex.axis=.6)
-interval_event('chamber_light',0,bw=2,color = '#ccee0044')
-interval_event('trial',0,
+interval_event('trial',.9,
                lab_on = '_start',
-               lab_off = '_end',
-               bw=.25,color = '#bbbbbb')
+               lab_off = '_end',color = '#bbbbbb')
+interval_event('chamber_light',.7,color = '#ccee0044')
 interval_event('central_light',0,color = '#00cc77cc')  
-interval_event('mel_light',0.5,color = '#33cc00cc')  
-interval_event('max_light',-0.5,color = '#33cc00cc')  
-interval_event('feeder',0,color = '#ee1100cc')  
-add_event('resp_max_key',.5,pch=4)
-add_event('resp_central_key',0,pch=4)
-add_event('resp_mel_key',-.5,pch=4)
-add_event('trial_start',.75,pch=24)
-add_event('trial_end',.7,pch=25)
-add_event('mel_light_on',.4,pch=24,bg='#33cc00cc')
-add_event('mel_light_off',.35,pch=25,bg='#33cc00cc')
-add_event('max_light_on',-.6,pch=24,bg='#33cc00cc')
-add_event('max_light_off',-.65,pch=25,bg='#33cc00cc')
+interval_event('mel_light',0.4,color = '#33cc00cc')  
+interval_event('max_light',-0.4,color = '#33cc00cc')  
+interval_event('feeder',-.85,color = '#ee1100cc')  
+add_event('resp_max_key',.4,pch=4,cex=1.5,lwd=2)
+add_event('resp_central_key',0,pch=4,cex=1.5,lwd=2)
+add_event('resp_mel_key',-.4,pch=4,cex=1.5,lwd=2)
+# add_event('trial_start',.75,pch=24)
+# add_event('trial_end',.7,pch=25)
+# add_event('mel_light_on',.4,pch=24,bg='#33cc00cc')
+# add_event('mel_light_off',.35,pch=25,bg='#33cc00cc')
+# add_event('max_light_on',-.6,pch=24,bg='#33cc00cc')
+# add_event('max_light_off',-.65,pch=25,bg='#33cc00cc')
 # add_event('_on',,pch=)
 # add_event('_off',,pch=)
 # add_event('_on',,pch=)
@@ -76,4 +83,4 @@ segments(x0=0:ceiling(tail(td$session_time,1)),
          x1=0:ceiling(tail(td$session_time,1)),
          y0=rep(-1,ceiling(tail(td$session_time,1))),
          y1=rep(1,ceiling(tail(td$session_time,1))),lwd=.5,col='#0088ee77')
-dev.off()
+# dev.off()
