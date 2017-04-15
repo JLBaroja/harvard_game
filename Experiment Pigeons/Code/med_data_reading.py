@@ -96,7 +96,7 @@ def hatter(file_name,array):
 	return data_frame
 
 
-def real_time(file_name):
+def real_time(file_name,z_pulses=False):
 	"""
 	Extracts event ocurrence in real time
 	"""
@@ -116,12 +116,31 @@ def real_time(file_name):
 		'240':'feeder_off',
 		'350':'chamber_light_on',
 		'360':'chamber_light_off'}
-	df=hatter(file_name,'A')
+	target_array='A'
+
+	if z_pulses:
+		events={'010':'z001',
+			'020':'z002',
+			'030':'z003',
+			'040':'z004',
+			'050':'z005',
+			'060':'z006'}
+		target_array='Z'
+
+	df=hatter(file_name,target_array)
 	df['event']=0
 	df['session_time']=0.
 	for ii in range(len(df)):
 		df['event'][ii]=events[df['after_point'][ii]]
 		df['session_time'][ii]=float(df['before_point'][ii])/100.
+	return df
+
+
+def build_test_data(file):
+	rt=real_time(file)
+	zp=real_time(file,z_pulses=True)
+	frames=[rt,zp]
+	df=pd.concat(frames)
 	return df
 
 

@@ -1,6 +1,5 @@
 rm(list=ls())
-data_folder <- '/home/lab25/Documents/Luis/harvard_game/Experiment Pigeons/Data/'
-results_folder <- '/home/lab25/Documents/Luis/harvard_game/Experiment Pigeons/Results/'
+data_folder <- '/home/bistecito/Documents/Research/Melioration/harvard_game/Experiment Pigeons/Data/'
 
 setwd(data_folder)
 td <- read.csv('test_data.csv')
@@ -47,8 +46,7 @@ interval_event <- function(event_name,
   text(-max(td$session_time)*.01,y_coord,event_name,adj=1,cex=1.5)
 }
 
-  
-setwd(results_folder)
+
 # pdf(file='test_results.pdf',width=15,height=5)
 # dev.new(width=5,height=3)
 x11(width=20,height=7)
@@ -57,6 +55,7 @@ par(bg='#eeeeee',col.axis='#555555',fg='#333333',
 plot(0,type='n',
      xlim=c(-max(td$session_time)*.07,
             max(td$session_time)),
+     ylim=c(-2,1),
      ann=F,axes=F)
 axis(1,at=0:tail(ceiling(td$session_time),1),cex.axis=.6)
 interval_event('trial',.9,
@@ -70,6 +69,14 @@ interval_event('feeder',-.85,color = '#ee1100cc')
 add_event('resp_max_key',.4,pch=4,cex=1.5)
 add_event('resp_central_key',0,pch=4,cex=1.5)
 add_event('resp_mel_key',-.4,pch=4,cex=1.5)
+for(zz in 1:6){
+  y_crd <- seq(-1.2,-1.9,length.out = 6)[zz]
+  ev_nm <- paste('z00',zz,sep='')
+  add_event(ev_nm,
+            y_coord = y_crd,
+            pch=23,bg='#9922eedd')
+  text(-max(td$session_time)*.01,y_crd,ev_nm,adj=1,cex=1.2)
+}
 # add_event('trial_start',.75,pch=24)
 # add_event('trial_end',.7,pch=25)
 # add_event('mel_light_on',.4,pch=24,bg='#33cc00cc')
