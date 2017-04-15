@@ -54,7 +54,7 @@ setwd(results_folder)
 x11(width=20,height=5)
 par(bg='#999999',col.axis='#555555',fg='#777777')
 plot(0,type='n',
-     xlim=c(-max(td$session_time)*.1,
+     xlim=c(-max(td$session_time)*.05,
             max(td$session_time)),
      ann=F,axes=F)
 axis(1,at=0:tail(ceiling(td$session_time),1),cex.axis=.6)

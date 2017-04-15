@@ -87,7 +87,7 @@ S1,
 
 S2,
 0.01": add T;
-	if T>=12000 [@T,@F]
+	if T>=18000 [@T,@F]
 	@T: ---> STOPABORTFLUSH
 	@F: ---> SX
 
