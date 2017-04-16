@@ -1,9 +1,9 @@
 rm(list=ls())
-data_folder <- '/home/bistecito/Documents/Research/Melioration/harvard_game/Experiment Pigeons/Data/'
+data_folder <- '/home/lab25/Documents/Luis/harvard_game/Experiment Pigeons/Data/'
+
 
 setwd(data_folder)
 td <- read.csv('test_data.csv')
-td
 head(td)
 unique(td$event)
 
@@ -49,15 +49,17 @@ interval_event <- function(event_name,
 
 # pdf(file='test_results.pdf',width=15,height=5)
 # dev.new(width=5,height=3)
+dev.off()
 x11(width=20,height=7)
-par(bg='#eeeeee',col.axis='#555555',fg='#333333',
+y_lims <- c(-2,1)
+par(bg='#cccccc',col.axis='#555555',fg='#333333',
     mar=c(3,1,3,1))
 plot(0,type='n',
      xlim=c(-max(td$session_time)*.07,
             max(td$session_time)),
      ylim=c(-2,1),
      ann=F,axes=F)
-axis(1,at=0:tail(ceiling(td$session_time),1),cex.axis=.6)
+axis(1,at=0:ceiling(max(td$session_time)),cex.axis=.6)
 interval_event('trial',.9,
                lab_on = '_start',
                lab_off = '_end',color = '#bbbbbb')
@@ -65,17 +67,25 @@ interval_event('chamber_light',.7,color = '#ccee0044')
 interval_event('central_light',0,color = '#00cc77cc')  
 interval_event('mel_light',0.4,color = '#33cc00cc')  
 interval_event('max_light',-0.4,color = '#33cc00cc')  
-interval_event('feeder',-.85,color = '#ee1100cc')  
-add_event('resp_max_key',.4,pch=4,cex=1.5)
-add_event('resp_central_key',0,pch=4,cex=1.5)
-add_event('resp_mel_key',-.4,pch=4,cex=1.5)
+interval_event('feeder',-.85,color = '#ee7700cc')  
+add_event('resp_max_key',.4,pch=4,cex=1.5,col='#ee0000')
+add_event('resp_central_key',0,pch=4,cex=1.5,col='#ee0000')
+add_event('resp_mel_key',-.4,pch=4,cex=1.5,col='#ee0000')
+
+z_labels <- c('(to trial start)',
+              '(to wait for peck)',
+              '(to feeder)',
+              '(to next trial)',
+              '(to turn lights off)',
+              '(to trial result)')
 for(zz in 1:6){
   y_crd <- seq(-1.2,-1.9,length.out = 6)[zz]
   ev_nm <- paste('z00',zz,sep='')
   add_event(ev_nm,
             y_coord = y_crd,
             pch=23,bg='#9922eedd')
-  text(-max(td$session_time)*.01,y_crd,ev_nm,adj=1,cex=1.2)
+  text(-max(td$session_time)*.01,y_crd,
+       paste(z_labels[zz],ev_nm),adj=1,cex=1)
 }
 # add_event('trial_start',.75,pch=24)
 # add_event('trial_end',.7,pch=25)
@@ -87,8 +97,8 @@ for(zz in 1:6){
 # add_event('_off',,pch=)
 # add_event('_on',,pch=)
 # add_event('_off',,pch=)
-segments(x0=0:ceiling(tail(td$session_time,1)),
-         x1=0:ceiling(tail(td$session_time,1)),
-         y0=rep(-1,ceiling(tail(td$session_time,1))),
-         y1=rep(1,ceiling(tail(td$session_time,1))),lwd=.5,col='#0088ee77')
+segments(x0=0:ceiling(max(td$session_time)),
+         x1=0:ceiling(max(td$session_time)),
+         y0=rep(y_lims[1],ceiling(tail(td$session_time,1))),
+         y1=rep(y_lims[2],ceiling(tail(td$session_time,1))),lwd=.5,col='#0088ee77')
 # dev.off()
