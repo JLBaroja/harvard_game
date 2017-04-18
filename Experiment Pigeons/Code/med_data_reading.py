@@ -29,20 +29,14 @@ def caterpillar(file_name,array):
 			start_time=line.split()[2]
 		if line.startswith('End Time:'):
 			end_time=line.split()[2]
-		#print line.split()
 		if found:
 			if len(line.split())==1:
 				break
 			block.append(line.split()[1:len(line.split())])
 		else:
 			if line.startswith(array_name):
-				# magic_number=len(line.split())
 				found=True
-				#block='Start'
-	# print magic_number
 
-	#times=[]
-	#events=[]
 	before_point=[]
 	after_point=[]
 	for d1 in range(len(block)):
@@ -63,17 +57,6 @@ def caterpillar(file_name,array):
 		'session_end':end_time}
 
 	return output
-	# return block, times, events
-	# print block
-	# print type(block)
-	# print len(block)
-	# print block[len(block)-1]
-	# print block[len(block)-2]
-	# print block[0]
-	# #print block[[0,3,13]]
-	# return subject, experiment, group, file_name#, block
- 	# for b in len(block):
- 		# print b
 
 
 def hatter(file_name,array):
@@ -90,9 +73,6 @@ def hatter(file_name,array):
 		'experiment_program':extraction['experiment_program']}
 	data_frame=pd.DataFrame(base)
 	data_frame=data_frame.ix[(data_frame['after_point']!='000')]
-	# data_frame['session_time']=data_frame['time'].cumsum()/10.
-	# data_frame['time']=data_frame['time']/100.
-	# data_frame.to_csv('file_name.csv')
 	return data_frame
 
 
@@ -129,10 +109,11 @@ def real_time(file_name,z_pulses=False):
 
 	df=hatter(file_name,target_array)
 	df['event']=0
-	df['session_time']=0.
-	for ii in range(len(df)):
-		df['event'][ii]=events[df['after_point'][ii]]
-		df['session_time'][ii]=float(df['before_point'][ii])/100.
+	df['session_time']=df['before_point'].astype(float)/100
+
+	for ee in events.keys():
+		df['event'][df['after_point']==ee]=events[ee]
+
 	return df
 
 
@@ -142,6 +123,9 @@ def build_test_data(file):
 	frames=[rt,zp]
 	df=pd.concat(frames)
 	return df
+
+
+
 
 
 def alice(files,array):
