@@ -73,7 +73,15 @@ def hatter(file_name,array):
 		'experiment_program':extraction['experiment_program']}
 	data_frame=pd.DataFrame(base)
 	data_frame=data_frame.ix[(data_frame['after_point']!='000')]
+	data_frame['data_file']=file_name
 	return data_frame
+
+
+def by_trial(file_name):
+	"""
+	Extracts info at trial level
+	"""
+	
 
 
 def real_time(file_name,z_pulses=False):
@@ -123,6 +131,9 @@ def build_test_data(file):
 	frames=[rt,zp]
 	df=pd.concat(frames)
 	return df
+
+
+
 
 
 

@@ -73,7 +73,7 @@ DIM L = 1 \ Trial time counter
 \70XXXXXX.ttt: Reaction time central light
 \60XXXXXX.ttt: Reaction time alternatives
 \50XXXXXX.ttt: Time of trial start 
-
+\90XXXXXX.ttt: Time of trial end
 
 
 \ Session start; main time counter
@@ -197,7 +197,8 @@ S1,
 \ Next trial 
 S.S.8,
 S1,
-#Z4: add E; set A(E-1)=T+.14 ---> S2
+#Z4: add F; set B(F-1)=90000000+T+I/1000; \ Record time of trial end
+	 add E; set A(E-1)=T+.14 ---> S2
 
 S2,
 2": on^chamber_light; add E; set A(E-1)=T+.35; Z1; add Y; set Z(Y-1)=T+.01 ---> S1 \ Start next trial
