@@ -2,11 +2,34 @@
 \ José Luis Baroja
 \ March 2017
 
+\ Lab Configuration
+\ inputs
+\ 1: Center key 
+\ 2: Left key
+\ 3: Right key
+\ outputs
+\ 1: Center light - white
+\ 2: Center light - red
+\ 3: Center light - green
+\ 4: Center light - blue
+\ 5: Left light - white
+\ 6: Left light - red
+\ 7: Left light - green
+\ 8: =none=
+\ 9: Right light - white
+\ 10: Right light - red
+\ 11: Right light - green
+\ 12: Feeder
+\ 13: =none=
+\ 14: Chamber light
+\ 15: Tone
+\ 16: Click
+
+\ Experiment Configuration
 \inputs
 ^melioration_key=2
 ^maximization_key=3
 ^central_key=1
-
 \outputs
 ^feeder=12
 ^melioration_light=5
@@ -47,6 +70,7 @@ DIM L = 1 \ Trial time counter
 
 \event key (real Time array)
 \T.01: Session start
+** \T.02: Session end **
 \T.11: Response in maximization key 
 \T.12: Response in central key
 \T.13: Response in melioration key
@@ -91,7 +115,7 @@ S1,
 
 S2,
 0.01": add T;
-	if T>=18000 [@T,@F]
+	if T>=90000 [@T,@F]
 	@T: ---> STOPABORTFLUSH
 	@F: ---> SX
 
@@ -106,10 +130,10 @@ S1,
 	add E; set A(E-1)=T+.15; SHOW 1, trial, I ---> S2
 
 S2,
-3": off^chamber_light; add E; set A(E-1)=T+.36 ---> S3
+10": off^chamber_light; add E; set A(E-1)=T+.36 ---> S3
 
 S3,
-2": on^central_light; add E; set A(E-1)=T+.17;
+3": on^central_light; add E; set A(E-1)=T+.17;
 			set L(0)=T  ---> S4
 
 S4,
@@ -201,7 +225,7 @@ S1,
 	 add E; set A(E-1)=T+.14 ---> S2
 
 S2,
-2": on^chamber_light; add E; set A(E-1)=T+.35; Z1; add Y; set Z(Y-1)=T+.01 ---> S1 \ Start next trial
+3": on^chamber_light; add E; set A(E-1)=T+.35; Z1; add Y; set Z(Y-1)=T+.01 ---> S1 \ Start next trial
 
 
 
