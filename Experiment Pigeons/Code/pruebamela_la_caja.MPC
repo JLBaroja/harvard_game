@@ -1,0 +1,55 @@
+\ Pruébamela la caja
+\ This program tests three key inputs and five outcomes (feeder + light keys)
+\ Specifically, it rewards flashing lights (left and right keys) and finishes
+\ when the central key is pecked the first time.
+
+\ inputs
+^left_key=2
+^right_key=3
+^center_key=1
+
+\ outputs
+^feeder=12
+^left_light=6
+^right_light=10
+^center_light=4
+^chamber_light=14
+
+
+
+\ Flashing lights:
+S.S.1,
+S1,
+#START ---> S2
+
+S2,
+0.1": on^right_light; on^left_light ---> S3
+
+S3, 
+0.1": off^right_light; off^left_light ---> S2
+
+
+
+\ Reinforcement:
+S.S.2,
+S1,
+#START ---> S2
+
+S2, 
+3#R^left_key!3#R^right_key: on^feeder ---> S3
+
+S3,
+10": off^feeder; on^chamber_light ---> S4
+
+S4, 
+3": off^chamber_light ---> S2
+
+
+
+\ Program finish:
+S.S.3,
+S1,
+#START: on^center_light ---> S2
+
+S2,
+3#R^center_key ---> STOPABORTFLUSH
