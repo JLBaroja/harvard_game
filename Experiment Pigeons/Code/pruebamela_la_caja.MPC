@@ -39,7 +39,7 @@ S2,
 3#R^left_key!3#R^right_key: on^feeder ---> S3
 
 S3,
-10": off^feeder; on^chamber_light ---> S4
+2.5": off^feeder; on^chamber_light ---> S4
 
 S4, 
 3": off^chamber_light ---> S2

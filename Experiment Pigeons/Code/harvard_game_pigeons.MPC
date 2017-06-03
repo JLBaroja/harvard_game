@@ -70,7 +70,7 @@ DIM L = 1 \ Trial time counter
 
 \event key (real Time array)
 \T.01: Session start
-** \T.02: Session end **
+\T.02: Session end
 \T.11: Response in maximization key 
 \T.12: Response in central key
 \T.13: Response in melioration key
@@ -115,8 +115,8 @@ S1,
 
 S2,
 0.01": add T;
-	if T>=90000 [@T,@F]
-	@T: ---> STOPABORTFLUSH
+	if T>=360000 [@T,@F]
+	@T: add E; set A(E-1)=T+.02 ---> STOPABORTFLUSH \ Session end
 	@F: ---> SX
 
 
@@ -130,10 +130,10 @@ S1,
 	add E; set A(E-1)=T+.15; SHOW 1, trial, I ---> S2
 
 S2,
-10": off^chamber_light; add E; set A(E-1)=T+.36 ---> S3
+8": off^chamber_light; add E; set A(E-1)=T+.36 ---> S3
 
 S3,
-3": on^central_light; add E; set A(E-1)=T+.17;
+2": on^central_light; add E; set A(E-1)=T+.17;
 			set L(0)=T  ---> S4
 
 S4,
@@ -225,7 +225,7 @@ S1,
 	 add E; set A(E-1)=T+.14 ---> S2
 
 S2,
-3": on^chamber_light; add E; set A(E-1)=T+.35; Z1; add Y; set Z(Y-1)=T+.01 ---> S1 \ Start next trial
+2": on^chamber_light; add E; set A(E-1)=T+.35; Z1; add Y; set Z(Y-1)=T+.01 ---> S1 \ Start next trial
 
 
 
