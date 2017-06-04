@@ -1,0 +1,13 @@
+,after_point,before_point,box,condition,date,experiment_name,experiment_program,session_end,session_start,subject,data_file,event,session_time
+0,010,0,8,0,06/03/17,harvard_game,harvard_game_pigeons,17:08:53,16:08:33,P327,p327_s01_hgame,session_start,0.0
+1,350,0,8,0,06/03/17,harvard_game,harvard_game_pigeons,17:08:53,16:08:33,P327,p327_s01_hgame,chamber_light_on,0.0
+2,150,0,8,0,06/03/17,harvard_game,harvard_game_pigeons,17:08:53,16:08:33,P327,p327_s01_hgame,trial_start,0.0
+3,360,800,8,0,06/03/17,harvard_game,harvard_game_pigeons,17:08:53,16:08:33,P327,p327_s01_hgame,chamber_light_off,8.0
+4,170,1000,8,0,06/03/17,harvard_game,harvard_game_pigeons,17:08:53,16:08:33,P327,p327_s01_hgame,central_light_on,10.0
+5,220,157261,8,0,06/03/17,harvard_game,harvard_game_pigeons,17:08:53,16:08:33,P327,p327_s01_hgame,central_light_off,1572.61
+6,180,157261,8,0,06/03/17,harvard_game,harvard_game_pigeons,17:08:53,16:08:33,P327,p327_s01_hgame,mel_light_on,1572.61
+7,160,157261,8,0,06/03/17,harvard_game,harvard_game_pigeons,17:08:53,16:08:33,P327,p327_s01_hgame,max_light_on,1572.61
+8,120,157261,8,0,06/03/17,harvard_game,harvard_game_pigeons,17:08:53,16:08:33,P327,p327_s01_hgame,resp_central_key,1572.61
+9,020,360000,8,0,06/03/17,harvard_game,harvard_game_pigeons,17:08:53,16:08:33,P327,p327_s01_hgame,0,3600.0
+0,010,0,8,0,06/03/17,harvard_game,harvard_game_pigeons,17:08:53,16:08:33,P327,p327_s01_hgame,z001,0.0
+1,020,157261,8,0,06/03/17,harvard_game,harvard_game_pigeons,17:08:53,16:08:33,P327,p327_s01_hgame,z002,1572.61

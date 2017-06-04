@@ -3,7 +3,7 @@ data_folder <- '/home/lab25/Documents/Luis/harvard_game/Experiment Pigeons/Data/
 
 
 setwd(data_folder)
-td <- read.csv('test_data.csv')
+td <- read.csv('p168.csv')
 head(td)
 unique(td$event)
 
@@ -100,5 +100,5 @@ for(zz in 1:6){
 segments(x0=0:ceiling(max(td$session_time)),
          x1=0:ceiling(max(td$session_time)),
          y0=rep(y_lims[1],ceiling(tail(td$session_time,1))),
-         y1=rep(y_lims[2],ceiling(tail(td$session_time,1))),lwd=.5,col='#0088ee77')
+         y1=rep(y_lims[2],ceiling(tail(td$session_time,1))),lwd=.5,col='#0088ee22')
 # dev.off()

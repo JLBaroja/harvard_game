@@ -83,12 +83,12 @@ def by_trial(file_name):
 	"""
 	
 
-
 def real_time(file_name,z_pulses=False):
 	"""
 	Extracts event ocurrence in real time
 	"""
 	events={'010':'session_start',
+		'020':'session_end',
 		'110':'resp_max_key',
 		'120':'resp_central_key',
 		'130':'resp_mel_key',
