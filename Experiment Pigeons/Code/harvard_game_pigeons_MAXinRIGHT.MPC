@@ -47,6 +47,8 @@
 \F: index of array B
 \Y: index of array Z
 \V: availability of alternatives (make opposite unchoosable after first choice in trial)
+\J: number of responses in MELIORATION
+\K: number of responses in MAXIMIZATION 
 
 \lists
 LIST S = 00000, 00556, 01111, 01667, 02222, 02778, 03333 \Pr(ref|maximization)
@@ -109,13 +111,15 @@ S1,
 	set F = 0; \ Index of array B 
 	set Y = 0; \ Index of array Z
 	set I = 0; \ Trial counter
+	set J = 0; \ Counter responses MELIORATION
+	set K = 0; \ Counter responses MAXIMIZATION
 	add E; set A(E-1)=T+.01; \ Record session start
 	on^chamber_light; add E; set A(E-1)=T+.35;
 	Z1; add Y; set Z(Y-1)=T+.01 ---> S2 \ To first trial
 
 S2,
 0.01": add T;
-	if T>=360000 [@T,@F]
+	if T>=6000 [@T,@F]
 	@T: add E; set A(E-1)=T+.02 ---> STOPABORTFLUSH \ Session end
 	@F: ---> SX
 
@@ -127,7 +131,10 @@ S1,
 #Z1: add I;
 	add F; set B(F-1)=50000000+T+I/1000; \ Record time of trial start
 	add F; set B(F-1)=99000+X+I/1000; \ Record state that operates in trial
-	add E; set A(E-1)=T+.15; SHOW 1, trial, I ---> S2
+	add E; set A(E-1)=T+.15;
+	SHOW 2, respMAX, K;
+	SHOW 3, respMEL, J; 
+	SHOW 1, trial, I ---> S2
 
 S2,
 8": off^chamber_light; add E; set A(E-1)=T+.36 ---> S3
@@ -232,14 +239,14 @@ S2,
 \ Recording all MAX responses times
 S.S.9,
 S1,
-#R^maximization_key: add E; set A(E-1)=T+.11 ---> SX
+#R^maximization_key: add K; add E; set A(E-1)=T+.11 ---> SX
 
 
 
 \ Recording all MEL responses times
 S.S.10,
 S1,
-#R^melioration_key: add E; set A(E-1)=T+.13 ---> SX 
+#R^melioration_key: add J; add E; set A(E-1)=T+.13 ---> SX 
 
 
  

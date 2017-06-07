@@ -5,7 +5,7 @@ import os
 def caterpillar(file_name,array):
 	"""
 	Function that reads file 'file_name' and
-	returns data contained in 'array'.
+	returns data contained in 'array' as a dict.
 	(Should work for any MED file.)
 	"""
 	archive=open(file_name)
@@ -65,10 +65,14 @@ def hatter(file_name,array):
 	MED file and returns it in a pandas dataframe
 	"""
 	extraction=caterpillar(file_name,array)
-	base={'before_point':extraction['before_point'],'after_point':extraction['after_point'],
-		'subject':extraction['subject'],'box':extraction['box'],
-		'date':extraction['date'],'session_start':extraction['session_start'],
-		'session_end':extraction['session_end'],'condition':extraction['condition'],
+	base={'before_point':extraction['before_point'],
+		'after_point':extraction['after_point'],
+		'subject':extraction['subject'],
+		'box':extraction['box'],
+		'date':extraction['date'],
+		'session_start':extraction['session_start'],
+		'session_end':extraction['session_end'],
+		'condition':extraction['condition'],
 		'experiment_name':extraction['experiment_name'],
 		'experiment_program':extraction['experiment_program']}
 	data_frame=pd.DataFrame(base)
@@ -82,6 +86,8 @@ def by_trial(file_name):
 	Extracts info at trial level
 	"""
 	
+
+
 
 def real_time(file_name,z_pulses=False):
 	"""

@@ -3,7 +3,7 @@ data_folder <- '/home/lab25/Documents/Luis/harvard_game/Experiment Pigeons/Data/
 
 
 setwd(data_folder)
-td <- read.csv('p168.csv')
+td <- read.csv('p498.csv')
 head(td)
 unique(td$event)
 

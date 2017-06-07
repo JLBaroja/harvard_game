@@ -1,0 +1,258 @@
+\ The Harvard Game (pigeon version)
+\ José Luis Baroja
+\ March 2017
+
+\ Lab Configuration
+\ inputs
+\ 1: Center key 
+\ 2: Left key
+\ 3: Right key
+\ outputs
+\ 1: Center light - white
+\ 2: Center light - red
+\ 3: Center light - green
+\ 4: Center light - blue
+\ 5: Left light - white
+\ 6: Left light - red
+\ 7: Left light - green
+\ 8: =none=
+\ 9: Right light - white
+\ 10: Right light - red
+\ 11: Right light - green
+\ 12: Feeder
+\ 13: =none=
+\ 14: Chamber light
+\ 15: Tone
+\ 16: Click
+
+\ Experiment Configuration
+\inputs
+^melioration_key=3
+^maximization_key=2
+^central_key=1
+\outputs
+^feeder=12
+^melioration_light=9
+^maximization_light=5
+^central_light=1
+^chamber_light=14
+
+\variables
+\T: session time (sec/100)
+\I: trial counter 
+\W: hgame temporal window (number of trials that determine state)
+\X: hgame state: counter of responses in maXimization (in last W choices: min at 0, max at W)
+\P: scheduled probability of reinforcement in each trial
+\E: index of array A
+\F: index of array B
+\Y: index of array Z
+\V: availability of alternatives (make opposite unchoosable after first choice in trial)
+\J: number of responses in MELIORATION
+\K: number of responses in MAXIMIZATION 
+
+\lists
+LIST S = 00000, 00556, 01111, 01667, 02222, 02778, 03333 \Pr(ref|maximization)
+LIST G = 03333, 03889, 04444, 05000, 05556, 06111, 06667 \Pr(ref|melioration)
+
+\arrays
+DIM A = 10000 \ Real time events
+DIM B = 6000 \ Trial-level events
+DIM Z = 10000 \ Real time z-pulses
+DIM L = 1 \ Trial time counter
+	\ L(0) = RTime from on^central_light til response on that key
+	\ L(1) = RTime from on^alternatives til response on any of them
+
+\ Z-pulses
+\ Z1: To trial start
+\ Z2: To wait for peck from any alternative
+\ Z3: To feeder
+\ Z4: To next trial
+\ Z5: To turn off alternative lights
+\ Z6: To trial result
+
+\event key (real Time array)
+\T.01: Session start
+\T.02: Session end
+\T.11: Response in maximization key 
+\T.12: Response in central key
+\T.13: Response in melioration key
+\T.14: Trial end
+\T.15: Trial start
+\T.16: Maximization light ON
+\T.17: Central light ON
+\T.18: Melioration light ON
+\T.19: Feeder ON
+\T.21: Maximization light OFF
+\T.22: Central light OFF
+\T.23: Melioration light OFF
+\T.24: Feeder OFF
+\T.35: Chamber light ON
+\T.36: Chamber light OFF 
+
+\event key (trial array)
+\510.ttt: Chose maximization 
+\530.ttt: Chose melioration
+\690.ttt: Trial rewarded
+\790.ttt: Trial not rewarded
+\990XX.ttt: State of the game (that operated in THIS trial)
+\800XXXXX.ttt: Scheduled P (given a state AND a choice) 
+\70XXXXXX.ttt: Reaction time central light
+\60XXXXXX.ttt: Reaction time alternatives
+\50XXXXXX.ttt: Time of trial start 
+\90XXXXXX.ttt: Time of trial end
+
+
+\ Session start; main time counter
+S.S.1, 
+S1,
+#START:	set W = 6; \ Temporal window
+	set X = 3; \ Starting state in the game
+	set E = 0; \ Index of array A
+	set F = 0; \ Index of array B 
+	set Y = 0; \ Index of array Z
+	set I = 0; \ Trial counter
+	set J = 0; \ Counter responses MELIORATION
+	set K = 0; \ Counter responses MAXIMIZATION
+	add E; set A(E-1)=T+.01; \ Record session start
+	on^chamber_light; add E; set A(E-1)=T+.35;
+	Z1; add Y; set Z(Y-1)=T+.01 ---> S2 \ To first trial
+
+S2,
+0.01": add T;
+	if T>=6000 [@T,@F]
+	@T: add E; set A(E-1)=T+.02 ---> STOPABORTFLUSH \ Session end
+	@F: ---> SX
+
+
+
+\ Trial start
+S.S.2,
+S1,
+#Z1: add I;
+	add F; set B(F-1)=50000000+T+I/1000; \ Record time of trial start
+	add F; set B(F-1)=99000+X+I/1000; \ Record state that operates in trial
+	add E; set A(E-1)=T+.15;
+	SHOW 2, respMAX, K;
+	SHOW 3, respMEL, J; 
+	SHOW 1, trial, I ---> S2
+
+S2,
+8": off^chamber_light; add E; set A(E-1)=T+.36 ---> S3
+
+S3,
+2": on^central_light; add E; set A(E-1)=T+.17;
+			set L(0)=T  ---> S4
+
+S4,
+#R^central_key: off^central_light; add E; set A(E-1)=T+.22; 
+					add F; set B(F-1)=70000000+T-L(0)+I/1000; 
+		on^melioration_light; add E; set A(E-1)=T+.18;
+		on^maximization_light; add E; set A(E-1)=T+.16;	
+		set L(1)=T;
+		set V=1; \ Both options available	
+		Z2; add Y; set Z(Y-1)=T+.02 ---> S1 \ To wait for peck in any lateral key
+
+
+
+\ Wait for peck in MELIORATION
+S.S.3,
+S1,
+#Z2: ---> S2 
+
+S2,
+#R^melioration_key: if V=1 [@T,@F]
+			@T: set V=0 ---> S3
+			@F: ---> S1
+
+S3,
+0.01": add F; set B(F-1)=530+I/1000;
+	add F; set B(F-1)=60000000+T-L(1)+I/1000; 
+	set P=G(X);
+	Z5; add Y; set Z(Y-1)=T+.05; \ Turn keys off
+	if X>0 [@T,@F]
+		@T: set X = X-1; Z6; add Y; set Z(Y-1)=T+.06 ---> S1
+		@F: Z6; add Y; set Z(Y-1)=T+.06 ---> S1
+
+
+
+\ Wait for peck in MAXIMIZATION
+S.S.4,
+S1,
+#Z2: ---> S2
+
+S2,
+#R^maximization_key: if V=1 [@T,@F]
+			@T: set V=0 ---> S3
+			@F: ---> S1
+
+S3,
+0.01": add F; set B(F-1)=510+I/1000;
+	add F; set B(F-1)=60000000+T-L(1)+I/1000;
+	set P=S(X); \ Set probability of reward
+	Z5; add Y; set Z(Y-1)=T+.05; \ Turn keys off
+	if X=W [@T,@F] \ Update X after setting P
+		@T: Z6; add Y; set Z(Y-1)=T+.06 ---> S1
+		@F: add X; Z6; add Y; set Z(Y-1)=T+.06 ---> S1
+
+
+
+\ Trial result
+S.S.5,
+S1,
+#Z6: add F; set B(F-1)=80000000+P+I/1000;
+	WITHPI=P[@T,@F]
+		@T: add F; set B(F-1)=690+I/1000; Z3; add Y; set Z(Y-1)=T+.03 ---> S1 \ Feeder
+		@F: add F; set B(F-1)=790+I/1000; Z4; add Y; set Z(Y-1)=T+.04 ---> S1 \ Next trial
+
+
+
+\ Feeder
+S.S.6,
+S1,
+#Z3: on^feeder; add E; set A(E-1)=T+.19 ---> S2
+
+S2,
+3": off^feeder; add E; set A(E-1)=T+.24; 
+	Z4; add Y; set Z(Y-1)=T+.04 ---> S1 \ To next trial 
+
+
+
+\ Turn keys off
+S.S.7,
+S1,
+#Z5: off^melioration_light;  add E; set A(E-1)=T+.23; 
+	off^maximization_light; add E; set A(E-1)=T+.21 ---> SX
+
+
+
+\ Next trial 
+S.S.8,
+S1,
+#Z4: add F; set B(F-1)=90000000+T+I/1000; \ Record time of trial end
+	 add E; set A(E-1)=T+.14 ---> S2
+
+S2,
+2": on^chamber_light; add E; set A(E-1)=T+.35; Z1; add Y; set Z(Y-1)=T+.01 ---> S1 \ Start next trial
+
+
+
+\ Recording all MAX responses times
+S.S.9,
+S1,
+#R^maximization_key: add K; add E; set A(E-1)=T+.11 ---> SX
+
+
+
+\ Recording all MEL responses times
+S.S.10,
+S1,
+#R^melioration_key: add J; add E; set A(E-1)=T+.13 ---> SX 
+
+
+ 
+\ Recording all CEN responses times
+S.S.11,
+S1,
+#R^central_key: add E; set A(E-1)=T+.12 ---> SX
+
+
