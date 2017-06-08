@@ -119,7 +119,7 @@ S1,
 
 S2,
 0.01": add T;
-	if T>=6000 [@T,@F]
+	if T>=360000 [@T,@F]
 	@T: add E; set A(E-1)=T+.02 ---> STOPABORTFLUSH \ Session end
 	@F: ---> SX
 

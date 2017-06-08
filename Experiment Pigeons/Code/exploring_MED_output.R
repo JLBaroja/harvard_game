@@ -66,11 +66,11 @@ interval_event('trial',.9,
 interval_event('chamber_light',.7,color = '#ccee0044')
 interval_event('central_light',0,color = '#00cc77cc')  
 interval_event('mel_light',0.4,color = '#33cc00cc')  
+add_event('resp_mel_key',0.4,pch=4,cex=1.5,col='#ee0000')
 interval_event('max_light',-0.4,color = '#33cc00cc')  
+add_event('resp_max_key',-0.4,pch=4,cex=1.5,col='#ee0000')
 interval_event('feeder',-.85,color = '#ee7700cc')  
-add_event('resp_max_key',.4,pch=4,cex=1.5,col='#ee0000')
 add_event('resp_central_key',0,pch=4,cex=1.5,col='#ee0000')
-add_event('resp_mel_key',-.4,pch=4,cex=1.5,col='#ee0000')
 
 z_labels <- c('(to trial start)',
               '(to wait for peck)',

@@ -85,8 +85,57 @@ def by_trial(file_name):
 	"""
 	Extracts info at trial level
 	"""
-	
+	# Trial-level info is stored in array B
+	ht=hatter(file_name,'B')
+	# Find out how many trials started (?) in session: (not sure if needed)
+	# n_trials=int(max(ht['after_point']))
+	trls=ht['after_point'].unique()
+	tl=pd.DataFrame(columns=['trial',
+				'choice',
+				'result',
+				'game_state',
+				'scheduled_probability',
+				'rt_central',
+				'rt_choice',
+				'time_start',
+				'time_end'],index=range(int(max(trls))))
 
+	tl_index=0
+	for tt in trls:
+		ld=ht[ht.after_point==tt]
+		if len(ld)==8:
+			tl.trial[tl_index]=tt
+			tl.time_start[tl_index]=(float(ld.before_point[ld.index[0]])-50000000)/100
+			tl.time_end[tl_index]=(float(ld.before_point[ld.index[7]])-90000000)/100
+			tl.rt_central[tl_index]=(float(ld.before_point[ld.index[2]])-70000000)/100
+			tl.rt_choice[tl_index]=(float(ld.before_point[ld.index[4]])-60000000)/100
+			tl.scheduled_probability[tl_index]=(float(ld.before_point[ld.index[5]])-80000000)/10000
+			tl.game_state[tl_index]=int(ld.before_point[ld.index[1]])-99000
+			if ld.before_point[ld.index[3]]=='530':
+				tl.choice[tl_index]='melioration'
+			elif ld.before_point[ld.index[3]]=='510':
+				tl.choice[tl_index]='maximization'
+			if ld.before_point[ld.index[6]]=='690':
+				tl.result[tl_index]='rewarded'
+			elif ld.before_point[ld.index[6]]=='790':
+				tl.result[tl_index]='not_rewarded'
+			tl_index=tl_index+1
+
+	return tl
+
+"""
+\event key (trial array)
+\510.ttt: Chose maximization
+\530.ttt: Chose melioration
+\690.ttt: Trial rewarded
+\790.ttt: Trial not rewarded
+\990XX.ttt: State of the game (that operated in THIS trial)
+\800XXXXX.ttt: Scheduled P (given a state AND a choice)
+\70XXXXXX.ttt: Reaction time central light
+\60XXXXXX.ttt: Reaction time alternatives
+\50XXXXXX.ttt: Time of trial start
+\90XXXXXX.ttt: Time of trial end
+"""
 
 
 def real_time(file_name,z_pulses=False):
