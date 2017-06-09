@@ -90,6 +90,7 @@ def trial_data(file_name):
 	trls=ht['after_point'].unique()
 	tl=pd.DataFrame(columns=['trial',
 				'choice',
+				'key',
 				'result',
 				'game_state',
 				'scheduled_probability',
@@ -111,8 +112,16 @@ def trial_data(file_name):
 			tl.game_state[tl_index]=int(ld.before_point[ld.index[1]])-99000
 			if ld.before_point[ld.index[3]]=='530':
 				tl.choice[tl_index]='melioration'
+				if ht['experiment_program'].unique()[0].split('_')[3]=='MAXinRIGHT':
+					tl.key[tl_index]='left'
+				elif ht['experiment_program'].unique()[0].split('_')[3]=='MAXinLEFT':
+					tl.key[tl_index]='right'
 			elif ld.before_point[ld.index[3]]=='510':
 				tl.choice[tl_index]='maximization'
+				if ht['experiment_program'].unique()[0].split('_')[3]=='MAXinRIGHT':
+					tl.key[tl_index]='right'
+				elif ht['experiment_program'].unique()[0].split('_')[3]=='MAXinLEFT':
+					tl.key[tl_index]='left'
 			if ld.before_point[ld.index[6]]=='690':
 				tl.result[tl_index]='rewarded'
 			elif ld.before_point[ld.index[6]]=='790':

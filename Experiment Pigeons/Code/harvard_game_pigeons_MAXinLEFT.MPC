@@ -51,8 +51,8 @@
 \K: number of responses in MAXIMIZATION 
 
 \lists
-LIST S = 00000, 00556, 01111, 01667, 02222, 02778, 03333 \Pr(ref|maximization)
-LIST G = 03333, 03889, 04444, 05000, 05556, 06111, 06667 \Pr(ref|melioration)
+LIST S = 00000, 01111, 02222, 03333, 04444, 05555, 06666 \Pr(ref|maximization)
+LIST G = 01666, 02777, 03888, 05000, 06111, 07222, 08333 \Pr(ref|melioration)
 
 \arrays
 DIM A = 10000 \ Real time events
@@ -167,8 +167,7 @@ S2,
 S3,
 0.01": add F; set B(F-1)=530+I/1000;
 	add F; set B(F-1)=60000000+T-L(1)+I/1000; 
-\	set P=G(X);
-	set P=(2/3)*(X/W)+(1/6)*10000;	
+	set P=G(X);
 	Z5; add Y; set Z(Y-1)=T+.05; \ Turn keys off
 	if X>0 [@T,@F]
 		@T: set X = X-1; Z6; add Y; set Z(Y-1)=T+.06 ---> S1
@@ -189,8 +188,7 @@ S2,
 S3,
 0.01": add F; set B(F-1)=510+I/1000;
 	add F; set B(F-1)=60000000+T-L(1)+I/1000;
-\	set P=S(X); \ Set probability of reward
-	set P=(2/3)*(X/W)*10000;	
+	set P=S(X); \ Set probability of reward
 	Z5; add Y; set Z(Y-1)=T+.05; \ Turn keys off
 	if X=W [@T,@F] \ Update X after setting P
 		@T: Z6; add Y; set Z(Y-1)=T+.06 ---> S1

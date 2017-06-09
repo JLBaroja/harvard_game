@@ -3,7 +3,9 @@ data_folder <- '/home/lab25/Documents/Luis/harvard_game/Experiment Pigeons/Data/
 
 
 setwd(data_folder)
-td <- read.csv('p498.csv')
+rt <- read.csv('real_time_data.csv')
+
+td <- ṣubset(rt,subject=='p891'&)
 head(td)
 unique(td$event)
 
@@ -131,9 +133,9 @@ head(real_time_data)
 
 
 n_max <- 0:6
-p_max <- (2/3)*(n_max/6)*10000
-p_mel <- (2/3)*(n_max/6)+(1/6)*10000
-plot(0:6,p_max,ylim=c(0,1),type='o',pch=1,cex=2)
+p_max <- ((2/3)*(n_max/6))*10000
+p_mel <- ((2/3)*(n_max/6)+(1/6))*10000
+plot(0:6,p_max,ylim=c(0,10000),type='o',pch=1,cex=2)
 points(0:6,p_mel,type='o',pch=16,cex=2)
 
 p_max
@@ -141,6 +143,38 @@ p_mel
 
 
 
+
+
+
+
+
+
+
+
+
+
+td <- read.csv('trial_data.csv')
+head(td)
+
+x11(width=8,height=8)
+layout(matrix(1:4,ncol=2))
+par(mar=rep(3,4))
+# bb <- unique(td$subject)[4]
+for(bb in unique(td$subject)){
+  plot(NULL,xlim=c(0,250),ylim=c(0,250))
+  abline(0,1,lty='dashed')
+  mtext(bb,3,line=-2)
+  # ss <- sort(unique(td$session))[1]
+  for(ss in sort(unique(td$session))){
+    ld <- subset(td,subject==bb&session==ss)
+    # print(dim(ld))
+    # points(1:nrow(ld),cumsum(ld$result=='rewarded'),type='l',col='#0022bb')
+    # points(cumsum(ld$choice=='maximization'),
+    #        cumsum(ld$choice=='melioration'),type='l',col='#0022bb')
+    points(cumsum(ld$key=='left'),
+           cumsum(ld$key=='right'),type='l',col='#0022bb')
+  }
+}
 
 
 
