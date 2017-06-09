@@ -167,7 +167,8 @@ S2,
 S3,
 0.01": add F; set B(F-1)=530+I/1000;
 	add F; set B(F-1)=60000000+T-L(1)+I/1000; 
-	set P=G(X);
+\	set P=G(X);
+	set P=(2/3)*(X/W)+(1/6)*10000;	
 	Z5; add Y; set Z(Y-1)=T+.05; \ Turn keys off
 	if X>0 [@T,@F]
 		@T: set X = X-1; Z6; add Y; set Z(Y-1)=T+.06 ---> S1
@@ -188,7 +189,8 @@ S2,
 S3,
 0.01": add F; set B(F-1)=510+I/1000;
 	add F; set B(F-1)=60000000+T-L(1)+I/1000;
-	set P=S(X); \ Set probability of reward
+\	set P=S(X); \ Set probability of reward
+	set P=(2/3)*(X/W)*10000;	
 	Z5; add Y; set Z(Y-1)=T+.05; \ Turn keys off
 	if X=W [@T,@F] \ Update X after setting P
 		@T: Z6; add Y; set Z(Y-1)=T+.06 ---> S1

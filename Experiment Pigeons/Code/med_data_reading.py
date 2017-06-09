@@ -81,14 +81,12 @@ def hatter(file_name,array):
 	return data_frame
 
 
-def by_trial(file_name):
+def trial_data(file_name):
 	"""
 	Extracts info at trial level
 	"""
 	# Trial-level info is stored in array B
 	ht=hatter(file_name,'B')
-	# Find out how many trials started (?) in session: (not sure if needed)
-	# n_trials=int(max(ht['after_point']))
 	trls=ht['after_point'].unique()
 	tl=pd.DataFrame(columns=['trial',
 				'choice',
@@ -120,10 +118,33 @@ def by_trial(file_name):
 			elif ld.before_point[ld.index[6]]=='790':
 				tl.result[tl_index]='not_rewarded'
 			tl_index=tl_index+1
-
+	tl['subject']=ht['subject'].unique()[0]
+	tl['box']=ht['box'].unique()[0]
+	tl['date']=ht['date'].unique()[0]
+	tl['med_program_file']=ht['experiment_program'].unique()[0]
+	tl['session']=file_name.split('_')[1]
 	return tl
 
 """
+\event key (real Time array)
+\T.01: Session start
+\T.02: Session end
+\T.11: Response in maximization key
+\T.12: Response in central key
+\T.13: Response in melioration key
+\T.14: Trial end
+\T.15: Trial start
+\T.16: Maximization light ON
+\T.17: Central light ON
+\T.18: Melioration light ON
+\T.19: Feeder ON
+\T.21: Maximization light OFF
+\T.22: Central light OFF
+\T.23: Melioration light OFF
+\T.24: Feeder OFF
+\T.35: Chamber light ON
+\T.36: Chamber light OFF
+
 \event key (trial array)
 \510.ttt: Chose maximization
 \530.ttt: Chose melioration
@@ -138,7 +159,7 @@ def by_trial(file_name):
 """
 
 
-def real_time(file_name,z_pulses=False):
+def real_time_extractor(file_name,z_pulses=False):
 	"""
 	Extracts event ocurrence in real time
 	"""
@@ -180,52 +201,62 @@ def real_time(file_name,z_pulses=False):
 	return df
 
 
-def build_test_data(file):
-	rt=real_time(file)
-	zp=real_time(file,z_pulses=True)
+def real_time_data(file):
+	rt=real_time_extractor(file)
+	zp=real_time_extractor(file,z_pulses=True)
 	frames=[rt,zp]
 	df=pd.concat(frames)
 	return df
 
 
-
-
-
-
-
-
-def alice(files,array):
+def data_frame_merger(extracting_function,name_text_file):
 	"""
-	Function that extracts data from array from all files in list
-	and in current directory and merges them in a single dataframe
+	Makes a single DF according to 'function' with information 
+	contained in all files in 'Raw MED files'.
 	"""
+	os.chdir('Raw MED files/')
+	files=os.listdir('.')
 	global_df=pd.DataFrame()
-	for arc in range(len(files)):
-		frames=[global_df,hatter(files[arc],'C')]
+	for archive in range(len(files)):
+		# Trial-level and real-time-level functions work with a single argument now
+		frames=[global_df,extracting_function(files[archive])]
 		global_df=pd.concat(frames)
-	return global_df
-
-
-def cheshire(base_directory,array):
-	"""
-	Function that makes a .csv with data from all files in each
-	subdirectory in base_directory (builds full_data.csv)
-	"""
-	subdirs=[x[0] for x in os.walk(base_directory)]
-	ultraglobal_df=pd.DataFrame()
-	for dire in subdirs[1:len(subdirs)]:
-		os.chdir(dire)
-		for i in os.listdir(dire):
-			if i=='.DS_Store' or i=='.Rhistory':
-				os.unlink(i)
-		frames=[ultraglobal_df,alice(os.listdir(dire),array)]
-		ultraglobal_df=pd.concat(frames)
-	os.chdir(base_directory)
-	ultraglobal_df.to_csv('full_data.csv')
-	return ultraglobal_df
+	os.chdir('..')
+	global_df.to_csv(name_text_file)
+	#return global_df
 
 
 
 
 
+
+#def alice(files,array):
+#	"""
+#	Function that extracts data from array from all files in list
+#	and in current directory and merges them in a single dataframe
+#	"""
+#	global_df=pd.DataFrame()
+#	for arc in range(len(files)):
+#		frames=[global_df,hatter(files[arc],'C')]
+#		global_df=pd.concat(frames)
+#	return global_df
+
+
+#def cheshire(base_directory,array):
+#	"""
+#	Function that makes a .csv with data from all files in each
+#	subdirectory in base_directory (builds full_data.csv)
+#	"""
+#	subdirs=[x[0] for x in os.walk(base_directory)]
+#	ultraglobal_df=pd.DataFrame()
+#	for dire in subdirs[1:len(subdirs)]:
+#		os.chdir(dire)
+#		for i in os.listdir(dire):
+#			if i=='.DS_Store' or i=='.Rhistory':
+#				os.unlink(i)
+#		frames=[ultraglobal_df,alice(os.listdir(dire),array)]
+#		ultraglobal_df=pd.concat(frames)
+#	os.chdir(base_directory)
+#	ultraglobal_df.to_csv('full_data.csv')
+#	return ultraglobal_df
 

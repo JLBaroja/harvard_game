@@ -102,3 +102,46 @@ segments(x0=0:ceiling(max(td$session_time)),
          y0=rep(y_lims[1],ceiling(tail(td$session_time,1))),
          y1=rep(y_lims[2],ceiling(tail(td$session_time,1))),lwd=.5,col='#0088ee22')
 # dev.off()
+
+
+
+
+
+
+
+
+
+
+trial_data <- read.csv('trial_data.csv')
+dim(trial_data)
+head(trial_data)
+unique(trial_data$result)
+
+
+real_time_data <- read.csv('real_time_data.csv')
+dim(real_time_data)
+head(real_time_data)
+
+
+
+
+
+
+
+
+
+n_max <- 0:6
+p_max <- (2/3)*(n_max/6)*10000
+p_mel <- (2/3)*(n_max/6)+(1/6)*10000
+plot(0:6,p_max,ylim=c(0,1),type='o',pch=1,cex=2)
+points(0:6,p_mel,type='o',pch=16,cex=2)
+
+p_max
+p_mel
+
+
+
+
+
+
+
