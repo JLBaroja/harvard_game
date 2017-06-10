@@ -163,10 +163,15 @@ par(mar=rep(3,4))
 for(bb in unique(td$subject)){
   plot(NULL,xlim=c(0,250),ylim=c(0,250))
   abline(0,1,lty='dashed')
+  abline(0,1/3,lty='dotted',col='#666666')
+  abline(0,1/6,lty='dotted',col='#999999')
   mtext(bb,3,line=-2)
   # ss <- sort(unique(td$session))[1]
   for(ss in sort(unique(td$session))){
     ld <- subset(td,subject==bb&session==ss)
+    polygon(x=rep(c(-50,350),each=2),
+            y=c(-50,350,350,-50),
+            col='#ffffff33')
     # print(dim(ld))
     # points(1:nrow(ld),cumsum(ld$result=='rewarded'),type='l',col='#0022bb')
     # points(cumsum(ld$choice=='maximization'),
